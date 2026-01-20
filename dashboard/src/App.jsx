@@ -1,0 +1,205 @@
+import { useState } from 'react';
+import { useData, useFilteredData, useAggregations } from './hooks/useData';
+import Header from './components/Header';
+import Filters from './components/Filters';
+import KpiCards from './components/KpiCards';
+import Tabs from './components/Tabs';
+import TimeSeriesChart from './components/TimeSeriesChart';
+import RegionalChart from './components/RegionalChart';
+import CategoryChart from './components/CategoryChart';
+import ProductTable from './components/ProductTable';
+import MapChart from './components/MapChart';
+import CurrentPrices from './components/CurrentPrices';
+import Loading from './components/Loading';
+import Footer from './components/Footer';
+import { AlertCircle } from 'lucide-react';
+
+export default function App() {
+  const { data, aggregated, geoData, loading, error } = useData();
+  const [activeTab, setActiveTab] = useState('preco-atual');
+  const [filters, setFilters] = useState({
+    anos: [],
+    regioes: [],
+    categorias: [],
+    subcategorias: [],
+    produtos: []
+  });
+
+  const filteredData = useFilteredData(data, filters);
+  const aggregations = useAggregations(filteredData);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-red-50">
+        <div className="text-center p-8">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-red-800 mb-2">
+            Erro ao carregar dados
+          </h2>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header stats={aggregated?.stats} />
+
+      <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
+        <Filters
+          aggregated={aggregated}
+          filters={filters}
+          setFilters={setFilters}
+        />
+
+        <KpiCards
+          aggregations={aggregations}
+          filteredData={filteredData}
+        />
+
+        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Tab Content */}
+        {activeTab === 'preco-atual' && (
+          <CurrentPrices
+            filteredData={filteredData}
+            aggregated={aggregated}
+          />
+        )}
+
+        {activeTab === 'visao-geral' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TimeSeriesChart
+                filteredData={filteredData}
+                aggregations={aggregations}
+              />
+              <CategoryChart
+                aggregations={aggregations}
+                filteredData={filteredData}
+              />
+            </div>
+            <RegionalChart aggregations={aggregations} />
+          </div>
+        )}
+
+        {activeTab === 'evolucao' && (
+          <div className="space-y-6">
+            <TimeSeriesChart
+              filteredData={filteredData}
+              aggregations={aggregations}
+            />
+            <TimeSeriesChart
+              filteredData={filteredData}
+              aggregations={aggregations}
+              showByCategory={true}
+            />
+            {filters.categorias.length > 0 && (
+              <TimeSeriesChart
+                filteredData={filteredData}
+                aggregations={aggregations}
+                showBySubcategory={true}
+                title={`Subcategorias de ${filters.categorias.join(', ')}`}
+              />
+            )}
+          </div>
+        )}
+
+        {activeTab === 'regioes' && (
+          <div className="space-y-6">
+            <RegionalChart aggregations={aggregations} />
+            <div className="chart-container">
+              <h3 className="text-lg font-semibold text-neutral-800 mb-4">
+                Detalhamento por Região
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(aggregations.byRegiao || {})
+                  .filter(([regiao]) => regiao !== 'Média Estado')
+                  .sort((a, b) => b[1].media - a[1].media)
+                  .slice(0, 6)
+                  .map(([regiao, data]) => (
+                    <div key={regiao} className="bg-neutral-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-neutral-800">{regiao}</h4>
+                      <p className="text-2xl font-bold text-forest-600 mt-1">
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL'
+                        }).format(data.media)}
+                      </p>
+                      <p className="text-sm text-neutral-500 mt-1">
+                        {data.count} registros
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'categorias' && (
+          <div className="space-y-6">
+            <CategoryChart
+              aggregations={aggregations}
+              filteredData={filteredData}
+            />
+            <div className="chart-container">
+              <h3 className="text-lg font-semibold text-neutral-800 mb-4">
+                Detalhamento por Categoria
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(aggregations.byCategoria || {})
+                  .sort((a, b) => b[1].media - a[1].media)
+                  .map(([categoria, data]) => {
+                    const labels = {
+                      'MUDAS': { name: 'Mudas', color: 'bg-forest-100 text-forest-800' },
+                      'TORAS': { name: 'Toras', color: 'bg-wood-100 text-wood-800' },
+                      'LENHA': { name: 'Lenha', color: 'bg-amber-100 text-amber-800' },
+                      'CAVACOS': { name: 'Cavacos', color: 'bg-neutral-200 text-neutral-800' },
+                      'PRODUTOS_NAO_MADEIREIROS': { name: 'Não Madeireiros', color: 'bg-emerald-100 text-emerald-800' }
+                    };
+                    const label = labels[categoria] || { name: categoria, color: 'bg-neutral-100' };
+                    return (
+                      <div key={categoria} className={`${label.color} rounded-lg p-4`}>
+                        <h4 className="font-semibold">{label.name}</h4>
+                        <p className="text-2xl font-bold mt-1">
+                          {new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                          }).format(data.media)}
+                        </p>
+                        <div className="flex justify-between text-sm mt-2 opacity-75">
+                          <span>{data.count} registros</span>
+                          <span>{data.totalProdutos} produtos</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'produtos' && (
+          <ProductTable
+            aggregations={aggregations}
+            filteredData={filteredData}
+          />
+        )}
+
+        {activeTab === 'mapa' && (
+          <MapChart
+            aggregations={aggregations}
+            geoData={geoData}
+          />
+        )}
+      </main>
+
+      <Footer stats={aggregated?.stats} />
+    </div>
+  );
+}
