@@ -68,11 +68,7 @@ export default function Footer({ stats }) {
         <div className="border-t border-neutral-700 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <p>
-              Dados públicos do Governo do Estado do Paraná
-            </p>
-            <span className="hidden sm:inline text-neutral-600">•</span>
-            <p>
-              Última atualização: {stats?.ultimo_periodo || '-'}
+              Última atualização (dados: 11/2025) (dashboard - 19/01/26)
             </p>
           </div>
           <a

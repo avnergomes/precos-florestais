@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useData, useFilteredData, useAggregations } from './hooks/useData';
 import Header from './components/Header';
 import Filters from './components/Filters';
@@ -13,6 +13,7 @@ import CurrentPrices from './components/CurrentPrices';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import { AlertCircle } from 'lucide-react';
+import { trackVisitor } from './utils/analytics';
 
 export default function App() {
   const { data, aggregated, geoData, loading, error } = useData();
@@ -27,6 +28,11 @@ export default function App() {
 
   const filteredData = useFilteredData(data, filters);
   const aggregations = useAggregations(filteredData);
+
+  // Track visitor on mount
+  useEffect(() => {
+    trackVisitor();
+  }, []);
 
   if (loading) {
     return <Loading />;

@@ -14,7 +14,7 @@ export default function Header({ stats }) {
                 Preços Florestais
               </h1>
               <p className="text-forest-100 text-sm md:text-base">
-                DERAL/SEAB - Paraná
+                Paraná
               </p>
             </div>
           </div>
