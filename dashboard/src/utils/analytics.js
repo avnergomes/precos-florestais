@@ -1,7 +1,7 @@
 // Analytics tracking for visitor data
 // Sends visitor information to Google Sheets via Apps Script
 
-const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjtXdNTGykHZBoKCzX5DNOQpsJLME1DOH7130sGxjUN01-xttanGFJW9OgcYlTGc0_Mw/exec';
 
 /**
  * Collects visitor data and sends to Google Sheets
