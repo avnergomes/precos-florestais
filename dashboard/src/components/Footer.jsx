@@ -1,4 +1,4 @@
-import { ExternalLink, Database, Github } from 'lucide-react';
+﻿import { ExternalLink, Database, Github } from 'lucide-react';
 
 export default function Footer({ stats }) {
   return (
@@ -9,8 +9,8 @@ export default function Footer({ stats }) {
           <div>
             <h3 className="text-white font-semibold mb-3">Sobre</h3>
             <p className="text-sm leading-relaxed">
-              Dashboard interativo para visualização dos preços de produtos florestais
-              do estado do Paraná, com dados coletados pelo DERAL - Departamento de
+              Dashboard interativo para visualizaÃ§Ã£o dos preÃ§os de produtos florestais
+              do estado do ParanÃ¡, com dados coletados pelo DERAL - Departamento de
               Economia Rural da SEAB.
             </p>
           </div>
@@ -41,11 +41,11 @@ export default function Footer({ stats }) {
 
           {/* Stats */}
           <div>
-            <h3 className="text-white font-semibold mb-3">Estatísticas</h3>
+            <h3 className="text-white font-semibold mb-3">EstatÃ­sticas</h3>
             {stats && (
               <ul className="text-sm space-y-1">
                 <li>
-                  <span className="text-neutral-400">Período:</span>{' '}
+                  <span className="text-neutral-400">PerÃ­odo:</span>{' '}
                   {stats.periodo_inicio} a {stats.periodo_fim}
                 </li>
                 <li>
@@ -53,7 +53,7 @@ export default function Footer({ stats }) {
                   {stats.total_registros?.toLocaleString('pt-BR')}
                 </li>
                 <li>
-                  <span className="text-neutral-400">Regiões:</span>{' '}
+                  <span className="text-neutral-400">RegiÃµes:</span>{' '}
                   {stats.total_regioes}
                 </li>
                 <li>
@@ -65,10 +65,47 @@ export default function Footer({ stats }) {
           </div>
         </div>
 
+                <div className="mt-8">
+          <h4 className="text-white font-semibold text-sm mb-3">Outros projetos</h4>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="https://avnergomes.github.io/portfolio/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-3 py-1.5 text-xs rounded-full border border-neutral-600 text-neutral-200 hover:text-forest-300 hover:border-forest-400 transition-colors"
+            >
+              Portfolio
+            </a>
+            <a
+              href="https://avnergomes.github.io/vbp-parana/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-3 py-1.5 text-xs rounded-full border border-neutral-600 text-neutral-200 hover:text-forest-300 hover:border-forest-400 transition-colors"
+            >
+              VBP Parana
+            </a>
+            <a
+              href="https://avnergomes.github.io/precos-de-terras/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-3 py-1.5 text-xs rounded-full border border-neutral-600 text-neutral-200 hover:text-forest-300 hover:border-forest-400 transition-colors"
+            >
+              Precos de Terras
+            </a>
+            <a
+              href="https://avnergomes.github.io/precos-diarios/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-3 py-1.5 text-xs rounded-full border border-neutral-600 text-neutral-200 hover:text-forest-300 hover:border-forest-400 transition-colors"
+            >
+              Precos Diarios
+            </a>
+          </div>
+        </div>
         <div className="border-t border-neutral-700 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <p>
-              Última atualização (dados: 11/2025) (dashboard - 19/01/26)
+              Ãšltima atualizaÃ§Ã£o (dados: 11/2025) (dashboard - 19/01/26)
             </p>
           </div>
           <a
@@ -91,3 +128,5 @@ export default function Footer({ stats }) {
     </footer>
   );
 }
+
+
