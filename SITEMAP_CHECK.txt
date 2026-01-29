@@ -1,0 +1,12 @@
+﻿Comandos para testar sitemap/robots
+
+1) Sitemap (Content-Type e conteúdo):
+$r = Invoke-WebRequest -Uri "https://avnergomes.github.io/precos-florestais/sitemap.xml" -Method Get -Headers @{ "User-Agent" = "Googlebot" }
+$r.Headers.'Content-Type'
+$r.Content
+
+2) Robots.txt (conteúdo):
+Invoke-WebRequest -Uri "https://avnergomes.github.io/precos-florestais/robots.txt" -Method Get
+
+3) Opcional: HEAD (status):
+Invoke-WebRequest -Uri "https://avnergomes.github.io/precos-florestais/sitemap.xml" -Method Head -Headers @{ "User-Agent" = "Googlebot" }

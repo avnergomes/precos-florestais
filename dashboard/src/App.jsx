@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useData, useFilteredData, useAggregations } from './hooks/useData';
 import Header from './components/Header';
 import Filters from './components/Filters';
@@ -28,6 +28,20 @@ export default function App() {
 
   const filteredData = useFilteredData(data, filters);
   const aggregations = useAggregations(filteredData);
+
+  const filterSummary = useMemo(() => {
+    const yearLabel = filters.anos.length ? filters.anos.join(', ') : 'Todos os anos';
+    const regionLabel = filters.regioes.length ? filters.regioes.join(', ') : 'Todas as regi\u00f5es';
+    const categoryLabel = filters.categorias.length
+      ? getCategoryLabel(filters.categorias[0])
+      : 'Todas as categorias';
+    const subcategoryLabel = filters.subcategorias.length
+      ? filters.subcategorias[0]
+      : 'Todas as subcategorias';
+    const productLabel = filters.produtos.length ? filters.produtos[0] : 'Todos os produtos';
+
+    return `Ano: ${yearLabel} \u2022 Regi\u00e3o: ${regionLabel} \u2022 Categoria: ${categoryLabel} \u2022 Subcategoria: ${subcategoryLabel} \u2022 Produto: ${productLabel}`;
+  }, [filters]);
 
   // Track visitor on mount
   useEffect(() => {
@@ -62,6 +76,8 @@ export default function App() {
           filters={filters}
           setFilters={setFilters}
         />
+
+        <div className="text-sm text-neutral-500">{filterSummary}</div>
 
         <KpiCards
           aggregations={aggregations}
