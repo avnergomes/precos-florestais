@@ -10,6 +10,7 @@ export async function trackVisitor() {
   try {
     // Get visitor data
     const visitorData = {
+      origin: window.location.origin,
       timestamp: new Date().toISOString(),
       url: window.location.href,
       pathname: window.location.pathname,
@@ -61,6 +62,7 @@ function getSessionId() {
 export async function trackEvent(eventName, eventData = {}) {
   try {
     const data = {
+      origin: window.location.origin,
       timestamp: new Date().toISOString(),
       eventName,
       eventData,
