@@ -69,14 +69,6 @@ export default function Footer({ stats }) {
           <h4 className="text-white font-semibold text-sm mb-3">Outros projetos</h4>
           <div className="flex flex-wrap gap-2">
             <a
-              href="https://avnergomes.github.io/portfolio/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-3 py-1.5 text-xs rounded-full border border-neutral-600 text-neutral-200 hover:text-forest-300 hover:border-forest-400 transition-colors"
-            >
-              Portfolio
-            </a>
-            <a
               href="https://avnergomes.github.io/vbp-parana/"
               target="_blank"
               rel="noopener noreferrer"
