@@ -10,13 +10,17 @@ import CategoryChart from './components/CategoryChart';
 import ProductTable from './components/ProductTable';
 import MapChart from './components/MapChart';
 import CurrentPrices from './components/CurrentPrices';
+import ForecastChart from './components/ForecastChart';
+import ForecastKpis from './components/ForecastKpis';
+import ForecastTable from './components/ForecastTable';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import { AlertCircle } from 'lucide-react';
 import { trackVisitor } from './utils/analytics';
+import { getCategoryLabel } from './utils/format';
 
 export default function App() {
-  const { data, aggregated, geoData, loading, error } = useData();
+  const { data, aggregated, geoData, forecasts, loading, error } = useData();
   const [activeTab, setActiveTab] = useState('preco-atual');
   const [filters, setFilters] = useState({
     anos: [],
@@ -211,6 +215,47 @@ export default function App() {
             aggregations={aggregations}
             filteredData={filteredData}
           />
+        )}
+
+        {activeTab === 'previsoes' && forecasts?.series && (() => {
+          // Encontrar série baseada nos filtros ou usar a geral (todos *)
+          const seriesKeys = Object.keys(forecasts.series);
+          const generalKey = seriesKeys.find(k => k.includes('regiao=*') && k.includes('categoria=*')) || seriesKeys[0];
+          const selectedKey = filters.regioes.length === 1
+            ? seriesKeys.find(k => k.includes(`regiao=${filters.regioes[0]}`)) || generalKey
+            : generalKey;
+          const selectedSeries = forecasts.series[selectedKey];
+
+          // Construir histórico a partir dos dados filtrados
+          const historico = Object.entries(aggregations.byPeriodo || {})
+            .map(([periodo, data]) => ({ periodo, value: data.media }))
+            .sort((a, b) => a.periodo.localeCompare(b.periodo))
+            .slice(-24); // últimos 24 meses
+
+          return (
+            <div className="space-y-6">
+              <ForecastKpis
+                modelos={selectedSeries?.models || {}}
+                historico={historico}
+              />
+              <ForecastChart
+                historico={historico}
+                modelos={selectedSeries?.models || {}}
+                title="Previsão de preços florestais"
+                description="Projeção de preços para os próximos 12 meses utilizando múltiplos modelos de machine learning"
+              />
+              <ForecastTable
+                modelos={selectedSeries?.models || {}}
+                title="Previsões detalhadas por modelo"
+              />
+            </div>
+          );
+        })()}
+
+        {activeTab === 'previsoes' && !forecasts?.series && (
+          <div className="bg-white rounded-xl border border-neutral-100 p-8 text-center text-neutral-400">
+            Dados de previsão não disponíveis
+          </div>
         )}
 
         {activeTab === 'mapa' && (

@@ -1,12 +1,13 @@
-import { LayoutDashboard, TrendingUp, MapPin, Package, Table2, Map, DollarSign } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, MapPin, Package, Table2, Map, DollarSign, LineChart } from 'lucide-react';
 
 const tabs = [
-  { id: 'preco-atual', label: 'Preço Atual', icon: DollarSign },
-  { id: 'visao-geral', label: 'Visão Geral', icon: LayoutDashboard },
-  { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
-  { id: 'regioes', label: 'Regiões', icon: MapPin },
+  { id: 'preco-atual', label: 'Preco Atual', icon: DollarSign },
+  { id: 'visao-geral', label: 'Visao Geral', icon: LayoutDashboard },
+  { id: 'evolucao', label: 'Evolucao', icon: TrendingUp },
+  { id: 'regioes', label: 'Regioes', icon: MapPin },
   { id: 'categorias', label: 'Categorias', icon: Package },
   { id: 'produtos', label: 'Produtos', icon: Table2 },
+  { id: 'previsoes', label: 'Previsoes', icon: LineChart },
   { id: 'mapa', label: 'Mapa', icon: Map }
 ];
 
