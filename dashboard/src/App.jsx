@@ -16,7 +16,6 @@ import ForecastTable from './components/ForecastTable';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import { AlertCircle } from 'lucide-react';
-import { trackVisitor } from './utils/analytics';
 import { getCategoryLabel } from './utils/format';
 
 export default function App() {
@@ -46,11 +45,6 @@ export default function App() {
 
     return `Ano: ${yearLabel} \u2022 Regi\u00e3o: ${regionLabel} \u2022 Categoria: ${categoryLabel} \u2022 Subcategoria: ${subcategoryLabel} \u2022 Produto: ${productLabel}`;
   }, [filters]);
-
-  // Track visitor on mount
-  useEffect(() => {
-    trackVisitor();
-  }, []);
 
   if (loading) {
     return <Loading />;
