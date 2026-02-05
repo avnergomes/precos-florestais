@@ -1,7 +1,7 @@
 // Analytics tracking for visitor data
 // Sends visitor information to Google Sheets via Apps Script
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjtXdNTGykHZBoKCzX5DNOQpsJLME1DOH7130sGxjUN01-xttanGFJW9OgcYlTGc0_Mw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjtXdNTGykHZBaKCzX5DNOQpsJLME1DOH7130sGxjUN01-xttanGFJW9OgcYlTGc0_Mw/exec';
 
 /**
  * Gets or creates a session ID for the current visit
