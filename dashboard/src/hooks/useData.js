@@ -44,7 +44,6 @@ export function useData() {
         }
       } catch (err) {
         setError(err.message);
-        console.error('Erro ao carregar dados:', err);
       } finally {
         setLoading(false);
       }
