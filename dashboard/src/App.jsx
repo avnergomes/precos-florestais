@@ -155,7 +155,7 @@ export default function App() {
         <div className="text-sm text-neutral-500">{filterSummary}</div>
 
         <ActiveFilters
-          interactiveFilters={interactiveFilters}
+          filters={interactiveFilters}
           onRemove={handleRemoveInteractiveFilter}
           onClear={clearInteractiveFilters}
         />
