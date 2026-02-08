@@ -109,15 +109,13 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
         const regiao = feature.properties?.regiao;
         const rData = regionData[regiao];
         const value = rData ? rData.media : 0;
-        const isSelected = selectedRegiao && regiao === selectedRegiao;
-        const hasSelection = !!selectedRegiao;
 
         return {
           fillColor: getColor(value),
-          weight: isSelected ? 3 : 2,
+          weight: 2,
           opacity: 1,
-          color: isSelected ? '#1f2937' : '#ffffff',
-          fillOpacity: hasSelection ? (isSelected ? 0.95 : 0.4) : 0.8,
+          color: '#ffffff',
+          fillOpacity: 0.8,
         };
       };
 
@@ -158,11 +156,6 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
           mouseout: (e) => {
             layerRef.current.resetStyle(e.target);
           },
-          click: () => {
-            if (onRegiaoClick) {
-              onRegiaoClick(regiao);
-            }
-          },
         });
       };
 
@@ -183,7 +176,7 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
         console.warn('Could not fit bounds:', e);
       }
     });
-  }, [geoData, regionData, minVal, maxVal, colorGradient, onRegiaoClick, selectedRegiao]);
+  }, [geoData, regionData, minVal, maxVal, colorGradient]);
 
   return (
     <div className="chart-container">
@@ -220,7 +213,7 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
       </div>
 
       <p className="text-xs text-neutral-400 text-center mt-2">
-        Passe o mouse para ver detalhes • Clique para filtrar
+        Passe o mouse sobre uma região para ver os detalhes
       </p>
     </div>
   );

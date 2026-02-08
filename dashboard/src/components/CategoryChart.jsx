@@ -228,7 +228,7 @@ export default function CategoryChart({ aggregations, filteredData, onCategoriaC
                   fill={entry.color}
                   opacity={selectedCategoria && entry.categoria !== selectedCategoria ? 0.4 : 1}
                   stroke={entry.categoria === selectedCategoria ? '#1f2937' : 'none'}
-                  strokeWidth={entry.categoria === selectedCategoria ? 3 : 0}
+                  strokeWidth={entry.categoria === selectedCategoria ? 2 : 0}
                 />
               ))}
             </Pie>
@@ -246,10 +246,11 @@ export default function CategoryChart({ aggregations, filteredData, onCategoriaC
           </Treemap>
         )}
       </ResponsiveContainer>
-
-      <p className="text-xs text-center text-neutral-500 mt-3">
-        Clique para filtrar por categoria
-      </p>
+      {onCategoriaClick && (
+        <p className="text-xs text-center text-neutral-500 mt-2">
+          Clique para filtrar por categoria
+        </p>
+      )}
     </div>
   );
 }

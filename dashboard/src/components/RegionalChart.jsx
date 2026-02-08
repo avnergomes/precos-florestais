@@ -136,10 +136,11 @@ export default function RegionalChart({ aggregations, onRegiaoClick, selectedReg
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-
-      <p className="text-xs text-center text-neutral-500 mt-3">
-        Clique em uma barra para filtrar
-      </p>
+      {onRegiaoClick && (
+        <p className="text-xs text-center text-neutral-500 mt-2">
+          Clique em uma barra para filtrar por região
+        </p>
+      )}
     </div>
   );
 }

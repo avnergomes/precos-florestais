@@ -152,13 +152,13 @@ export default function App() {
           setFilters={setFilters}
         />
 
-        {hasInteractiveFilters && (
-          <ActiveFilters
-            filters={interactiveFilters}
-            onRemove={handleRemoveInteractiveFilter}
-            onClear={clearInteractiveFilters}
-          />
-        )}
+        <div className="text-sm text-neutral-500">{filterSummary}</div>
+
+        <ActiveFilters
+          interactiveFilters={interactiveFilters}
+          onRemove={handleRemoveInteractiveFilter}
+          onClear={clearInteractiveFilters}
+        />
 
         <KpiCards
           aggregations={aggregations}
@@ -179,14 +179,14 @@ export default function App() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TimeSeriesChart
-                filteredData={interactiveFilteredData}
+                filteredData={filteredData}
                 aggregations={aggregations}
                 onAnoClick={handleAnoClick}
                 selectedAno={interactiveFilters.ano}
               />
               <CategoryChart
                 aggregations={aggregations}
-                filteredData={interactiveFilteredData}
+                filteredData={filteredData}
                 onCategoriaClick={handleCategoriaClick}
                 selectedCategoria={interactiveFilters.categoria}
               />
@@ -202,13 +202,13 @@ export default function App() {
         {activeTab === 'evolucao' && (
           <div className="space-y-6">
             <TimeSeriesChart
-              filteredData={interactiveFilteredData}
+              filteredData={filteredData}
               aggregations={aggregations}
               onAnoClick={handleAnoClick}
               selectedAno={interactiveFilters.ano}
             />
             <TimeSeriesChart
-              filteredData={interactiveFilteredData}
+              filteredData={filteredData}
               aggregations={aggregations}
               showByCategory={true}
               onCategoriaClick={handleCategoriaClick}
@@ -216,7 +216,7 @@ export default function App() {
             />
             {filters.categorias.length > 0 && (
               <TimeSeriesChart
-                filteredData={interactiveFilteredData}
+                filteredData={filteredData}
                 aggregations={aggregations}
                 showBySubcategory={true}
                 title={`Subcategorias de ${filters.categorias.join(', ')}`}
@@ -264,7 +264,7 @@ export default function App() {
           <div className="space-y-6">
             <CategoryChart
               aggregations={aggregations}
-              filteredData={interactiveFilteredData}
+              filteredData={filteredData}
               onCategoriaClick={handleCategoriaClick}
               selectedCategoria={interactiveFilters.categoria}
             />
@@ -357,8 +357,6 @@ export default function App() {
           <MapChart
             aggregations={aggregations}
             geoData={geoData}
-            onRegiaoClick={handleRegiaoClick}
-            selectedRegiao={interactiveFilters.regiao}
           />
         )}
       </main>
