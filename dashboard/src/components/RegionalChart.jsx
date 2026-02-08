@@ -6,7 +6,7 @@ import {
 import { formatCurrency, formatNumber } from '../utils/format';
 import { ArrowUpDown } from 'lucide-react';
 
-export default function RegionalChart({ aggregations }) {
+export default function RegionalChart({ aggregations, onRegiaoClick, selectedRegiao }) {
   const [sortBy, setSortBy] = useState('media'); // 'media' or 'count'
   const [sortOrder, setSortOrder] = useState('desc');
 
@@ -118,13 +118,28 @@ export default function RegionalChart({ aggregations }) {
             width={90}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="media" radius={[0, 4, 4, 0]}>
+          <Bar
+            dataKey="media"
+            radius={[0, 4, 4, 0]}
+            onClick={(data) => onRegiaoClick?.(data.regiao)}
+            cursor={onRegiaoClick ? 'pointer' : 'default'}
+          >
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor(entry.media)} />
+              <Cell
+                key={`cell-${index}`}
+                fill={getColor(entry.media)}
+                opacity={selectedRegiao && entry.regiao !== selectedRegiao ? 0.4 : 1}
+                stroke={entry.regiao === selectedRegiao ? '#1f2937' : 'none'}
+                strokeWidth={entry.regiao === selectedRegiao ? 2 : 0}
+              />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      <p className="text-xs text-center text-neutral-500 mt-3">
+        Clique em uma barra para filtrar
+      </p>
     </div>
   );
 }

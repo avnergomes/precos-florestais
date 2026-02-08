@@ -6,7 +6,7 @@ import {
 import { formatCurrency, formatNumber, getCategoryLabel, getCategoryColor } from '../utils/format';
 import { BarChart3, PieChartIcon, Grid3X3 } from 'lucide-react';
 
-export default function CategoryChart({ aggregations, filteredData }) {
+export default function CategoryChart({ aggregations, filteredData, onCategoriaClick, selectedCategoria }) {
   const [chartType, setChartType] = useState('bar');
 
   const chartData = useMemo(() => {
@@ -192,9 +192,20 @@ export default function CategoryChart({ aggregations, filteredData }) {
               stroke="#737373"
             />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="media" radius={[4, 4, 0, 0]}>
+            <Bar
+              dataKey="media"
+              radius={[4, 4, 0, 0]}
+              onClick={(data) => onCategoriaClick?.(data.categoria)}
+              cursor={onCategoriaClick ? 'pointer' : 'default'}
+            >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  opacity={selectedCategoria && entry.categoria !== selectedCategoria ? 0.4 : 1}
+                  stroke={entry.categoria === selectedCategoria ? '#1f2937' : 'none'}
+                  strokeWidth={entry.categoria === selectedCategoria ? 2 : 0}
+                />
               ))}
             </Bar>
           </BarChart>
@@ -208,9 +219,17 @@ export default function CategoryChart({ aggregations, filteredData }) {
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               outerRadius={120}
               dataKey="count"
+              onClick={(data) => onCategoriaClick?.(data.categoria)}
+              cursor={onCategoriaClick ? 'pointer' : 'default'}
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  opacity={selectedCategoria && entry.categoria !== selectedCategoria ? 0.4 : 1}
+                  stroke={entry.categoria === selectedCategoria ? '#1f2937' : 'none'}
+                  strokeWidth={entry.categoria === selectedCategoria ? 3 : 0}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -227,6 +246,10 @@ export default function CategoryChart({ aggregations, filteredData }) {
           </Treemap>
         )}
       </ResponsiveContainer>
+
+      <p className="text-xs text-center text-neutral-500 mt-3">
+        Clique para filtrar por categoria
+      </p>
     </div>
   );
 }

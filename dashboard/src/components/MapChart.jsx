@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { formatCurrency, formatNumber } from '../utils/format';
 
-export default function MapChart({ aggregations, geoData }) {
+export default function MapChart({ aggregations, geoData, onRegiaoClick, selectedRegiao }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const layerRef = useRef(null);
@@ -109,13 +109,15 @@ export default function MapChart({ aggregations, geoData }) {
         const regiao = feature.properties?.regiao;
         const rData = regionData[regiao];
         const value = rData ? rData.media : 0;
+        const isSelected = selectedRegiao && regiao === selectedRegiao;
+        const hasSelection = !!selectedRegiao;
 
         return {
           fillColor: getColor(value),
-          weight: 2,
+          weight: isSelected ? 3 : 2,
           opacity: 1,
-          color: '#ffffff',
-          fillOpacity: 0.8,
+          color: isSelected ? '#1f2937' : '#ffffff',
+          fillOpacity: hasSelection ? (isSelected ? 0.95 : 0.4) : 0.8,
         };
       };
 
@@ -156,6 +158,11 @@ export default function MapChart({ aggregations, geoData }) {
           mouseout: (e) => {
             layerRef.current.resetStyle(e.target);
           },
+          click: () => {
+            if (onRegiaoClick) {
+              onRegiaoClick(regiao);
+            }
+          },
         });
       };
 
@@ -176,7 +183,7 @@ export default function MapChart({ aggregations, geoData }) {
         console.warn('Could not fit bounds:', e);
       }
     });
-  }, [geoData, regionData, minVal, maxVal, colorGradient]);
+  }, [geoData, regionData, minVal, maxVal, colorGradient, onRegiaoClick, selectedRegiao]);
 
   return (
     <div className="chart-container">
@@ -213,7 +220,7 @@ export default function MapChart({ aggregations, geoData }) {
       </div>
 
       <p className="text-xs text-neutral-400 text-center mt-2">
-        Passe o mouse sobre uma região para ver os detalhes
+        Passe o mouse para ver detalhes • Clique para filtrar
       </p>
     </div>
   );

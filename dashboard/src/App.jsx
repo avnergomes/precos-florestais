@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useData, useFilteredData, useAggregations } from './hooks/useData';
 import Header from './components/Header';
 import Filters from './components/Filters';
+import ActiveFilters from './components/ActiveFilters';
 import KpiCards from './components/KpiCards';
 import Tabs from './components/Tabs';
 import TimeSeriesChart from './components/TimeSeriesChart';
@@ -29,8 +30,84 @@ export default function App() {
     produtos: []
   });
 
+  // Estado de filtros interativos (clique nos gráficos)
+  const [interactiveFilters, setInteractiveFilters] = useState({
+    regiao: null,
+    categoria: null,
+    subcategoria: null,
+    ano: null,
+  });
+
+  // Handlers para filtros interativos
+  const handleRegiaoClick = useCallback((regiao) => {
+    setInteractiveFilters(prev => ({
+      ...prev,
+      regiao: prev.regiao === regiao ? null : regiao,
+    }));
+  }, []);
+
+  const handleCategoriaClick = useCallback((categoria) => {
+    setInteractiveFilters(prev => ({
+      ...prev,
+      categoria: prev.categoria === categoria ? null : categoria,
+      subcategoria: null,
+    }));
+  }, []);
+
+  const handleSubcategoriaClick = useCallback((subcategoria) => {
+    setInteractiveFilters(prev => ({
+      ...prev,
+      subcategoria: prev.subcategoria === subcategoria ? null : subcategoria,
+    }));
+  }, []);
+
+  const handleAnoClick = useCallback((ano) => {
+    setInteractiveFilters(prev => ({
+      ...prev,
+      ano: prev.ano === ano ? null : ano,
+    }));
+  }, []);
+
+  const handleRemoveInteractiveFilter = useCallback((key) => {
+    setInteractiveFilters(prev => ({
+      ...prev,
+      [key]: null,
+    }));
+  }, []);
+
+  const clearInteractiveFilters = useCallback(() => {
+    setInteractiveFilters({
+      regiao: null,
+      categoria: null,
+      subcategoria: null,
+      ano: null,
+    });
+  }, []);
+
+  // Verifica se há filtros interativos ativos
+  const hasInteractiveFilters = useMemo(() => {
+    return Object.values(interactiveFilters).some(v => v !== null);
+  }, [interactiveFilters]);
+
   const filteredData = useFilteredData(data, filters);
-  const aggregations = useAggregations(filteredData);
+
+  // Aplica filtros interativos aos dados filtrados
+  const interactiveFilteredData = useMemo(() => {
+    if (!filteredData?.length) return filteredData;
+
+    return filteredData.filter(item => {
+      if (interactiveFilters.regiao && item.regiao !== interactiveFilters.regiao) return false;
+      if (interactiveFilters.categoria && item.categoria !== interactiveFilters.categoria) return false;
+      if (interactiveFilters.subcategoria && item.subcategoria !== interactiveFilters.subcategoria) return false;
+      if (interactiveFilters.ano) {
+        const itemAno = item.periodo ? parseInt(item.periodo.split('-')[0]) : item.ano;
+        if (itemAno !== interactiveFilters.ano) return false;
+      }
+      return true;
+    });
+  }, [filteredData, interactiveFilters]);
+
+  const aggregations = useAggregations(interactiveFilteredData);
 
   const filterSummary = useMemo(() => {
     const yearLabel = filters.anos.length ? filters.anos.join(', ') : 'Todos os anos';
@@ -75,7 +152,13 @@ export default function App() {
           setFilters={setFilters}
         />
 
-        <div className="text-sm text-neutral-500">{filterSummary}</div>
+        {hasInteractiveFilters && (
+          <ActiveFilters
+            filters={interactiveFilters}
+            onRemove={handleRemoveInteractiveFilter}
+            onClear={clearInteractiveFilters}
+          />
+        )}
 
         <KpiCards
           aggregations={aggregations}
@@ -96,32 +179,44 @@ export default function App() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TimeSeriesChart
-                filteredData={filteredData}
+                filteredData={interactiveFilteredData}
                 aggregations={aggregations}
+                onAnoClick={handleAnoClick}
+                selectedAno={interactiveFilters.ano}
               />
               <CategoryChart
                 aggregations={aggregations}
-                filteredData={filteredData}
+                filteredData={interactiveFilteredData}
+                onCategoriaClick={handleCategoriaClick}
+                selectedCategoria={interactiveFilters.categoria}
               />
             </div>
-            <RegionalChart aggregations={aggregations} />
+            <RegionalChart
+              aggregations={aggregations}
+              onRegiaoClick={handleRegiaoClick}
+              selectedRegiao={interactiveFilters.regiao}
+            />
           </div>
         )}
 
         {activeTab === 'evolucao' && (
           <div className="space-y-6">
             <TimeSeriesChart
-              filteredData={filteredData}
+              filteredData={interactiveFilteredData}
               aggregations={aggregations}
+              onAnoClick={handleAnoClick}
+              selectedAno={interactiveFilters.ano}
             />
             <TimeSeriesChart
-              filteredData={filteredData}
+              filteredData={interactiveFilteredData}
               aggregations={aggregations}
               showByCategory={true}
+              onCategoriaClick={handleCategoriaClick}
+              selectedCategoria={interactiveFilters.categoria}
             />
             {filters.categorias.length > 0 && (
               <TimeSeriesChart
-                filteredData={filteredData}
+                filteredData={interactiveFilteredData}
                 aggregations={aggregations}
                 showBySubcategory={true}
                 title={`Subcategorias de ${filters.categorias.join(', ')}`}
@@ -132,7 +227,11 @@ export default function App() {
 
         {activeTab === 'regioes' && (
           <div className="space-y-6">
-            <RegionalChart aggregations={aggregations} />
+            <RegionalChart
+              aggregations={aggregations}
+              onRegiaoClick={handleRegiaoClick}
+              selectedRegiao={interactiveFilters.regiao}
+            />
             <div className="chart-container">
               <h3 className="text-lg font-semibold text-neutral-800 mb-4">
                 Detalhamento por Região
@@ -165,7 +264,9 @@ export default function App() {
           <div className="space-y-6">
             <CategoryChart
               aggregations={aggregations}
-              filteredData={filteredData}
+              filteredData={interactiveFilteredData}
+              onCategoriaClick={handleCategoriaClick}
+              selectedCategoria={interactiveFilters.categoria}
             />
             <div className="chart-container">
               <h3 className="text-lg font-semibold text-neutral-800 mb-4">
@@ -256,6 +357,8 @@ export default function App() {
           <MapChart
             aggregations={aggregations}
             geoData={geoData}
+            onRegiaoClick={handleRegiaoClick}
+            selectedRegiao={interactiveFilters.regiao}
           />
         )}
       </main>

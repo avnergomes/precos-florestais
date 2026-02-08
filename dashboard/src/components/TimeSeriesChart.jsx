@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, Area, AreaChart
+  ResponsiveContainer, Area, AreaChart, ReferenceLine
 } from 'recharts';
 import { formatCurrency, formatPeriod, getCategoryColor, getCategoryLabel } from '../utils/format';
 
@@ -15,7 +15,7 @@ function getSubcategoryColor(subcategoria, index) {
   return baseColors[index % baseColors.length];
 }
 
-export default function TimeSeriesChart({ filteredData, aggregations, showByCategory = false, showBySubcategory = false, title }) {
+export default function TimeSeriesChart({ filteredData, aggregations, showByCategory = false, showBySubcategory = false, title, onAnoClick, selectedAno, onCategoriaClick, selectedCategoria }) {
   const chartData = useMemo(() => {
     if (!filteredData || filteredData.length === 0) return [];
 
@@ -115,6 +115,19 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
 
   const chartTitle = title || (showBySubcategory ? 'Evolução por Subcategoria' : showByCategory ? 'Evolução por Categoria' : 'Evolução dos Preços');
 
+  const handleChartClick = (event) => {
+    if (event?.activePayload?.[0]?.payload?.periodo && onAnoClick) {
+      const periodo = event.activePayload[0].payload.periodo;
+      const ano = parseInt(periodo.split('-')[0]);
+      onAnoClick(ano);
+    }
+  };
+
+  // Encontrar o período selecionado baseado no ano
+  const selectedPeriodo = selectedAno
+    ? chartData.find(d => d.periodo?.startsWith(String(selectedAno)))?.periodo
+    : null;
+
   return (
     <div className="chart-container">
       <h3 className="text-lg font-semibold text-neutral-800 mb-4">
@@ -122,7 +135,12 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
       </h3>
       <ResponsiveContainer width="100%" height={350}>
         {(showByCategory || showBySubcategory) ? (
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            onClick={handleChartClick}
+            style={{ cursor: onAnoClick ? 'pointer' : 'default' }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
             <XAxis
               dataKey="periodo"
@@ -140,20 +158,34 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
               formatter={(value) => showBySubcategory ? value : getCategoryLabel(value)}
               wrapperStyle={{ fontSize: 12 }}
             />
+            {selectedPeriodo && (
+              <ReferenceLine
+                x={selectedPeriodo}
+                stroke="#1f2937"
+                strokeWidth={2}
+                strokeDasharray="4 4"
+              />
+            )}
             {categories.map((cat, index) => (
               <Line
                 key={cat}
                 type="monotone"
                 dataKey={cat}
                 stroke={showBySubcategory ? getSubcategoryColor(cat, index) : getCategoryColor(cat)}
-                strokeWidth={2}
+                strokeWidth={selectedCategoria === cat ? 4 : 2}
                 dot={false}
                 activeDot={{ r: 6 }}
+                opacity={selectedCategoria && selectedCategoria !== cat ? 0.3 : 1}
               />
             ))}
           </LineChart>
         ) : (
-          <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <AreaChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            onClick={handleChartClick}
+            style={{ cursor: onAnoClick ? 'pointer' : 'default' }}
+          >
             <defs>
               <linearGradient id="colorPreco" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#4A7C23" stopOpacity={0.3} />
@@ -173,6 +205,14 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
               stroke="#737373"
             />
             <Tooltip content={<CustomTooltip />} />
+            {selectedPeriodo && (
+              <ReferenceLine
+                x={selectedPeriodo}
+                stroke="#1f2937"
+                strokeWidth={2}
+                strokeDasharray="4 4"
+              />
+            )}
             <Area
               type="monotone"
               dataKey="preco"
@@ -184,6 +224,10 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
           </AreaChart>
         )}
       </ResponsiveContainer>
+
+      <p className="text-xs text-center text-neutral-500 mt-2">
+        Clique no gráfico para filtrar por período
+      </p>
     </div>
   );
 }

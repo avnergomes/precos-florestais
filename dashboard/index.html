@@ -59,109 +59,81 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Analytics Tracking Script -->
+    <!-- Tracking LGPD-compliant (19 campos anonimos) -->
     <script>
-    (function() {
-      const TRACKING_URL = 'https://script.google.com/macros/s/AKfycbyk8VzLygqFmid0cSB5Qge8yRKRV-hJNvWlCSZBPrOCnyJyTd21d-6mNRjyJ7NIr_-36Q/exec';
-
-      function getSessionId() {
-        let sessionId = sessionStorage.getItem('pf_session_id');
-        if (!sessionId) {
-          sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-          sessionStorage.setItem('pf_session_id', sessionId);
-          sessionStorage.setItem('pf_session_start', new Date().toISOString());
-          sessionStorage.setItem('pf_page_views', '0');
+      (function() {
+        function getDeviceType() {
+          var ua = navigator.userAgent;
+          if (/tablet|ipad|playbook|silk/i.test(ua)) return 'Tablet';
+          if (/Mobile|Android|iPhone|iPod|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua)) return 'Mobile';
+          return 'Desktop';
         }
-        return sessionId;
-      }
 
-      function isReturningVisitor() {
-        const hasVisited = localStorage.getItem('pf_has_visited');
-        if (!hasVisited) {
-          localStorage.setItem('pf_has_visited', 'true');
-          localStorage.setItem('pf_first_visit', new Date().toISOString());
-          return false;
+        function getConnectionType() {
+          if (navigator.connection) {
+            return navigator.connection.effectiveType || 'unknown';
+          }
+          return 'unknown';
         }
-        return true;
-      }
 
-      function getBrowserInfo() {
-        const ua = navigator.userAgent;
-        let browser = 'Unknown', version = '';
-        if (ua.indexOf('Firefox') > -1) { browser = 'Firefox'; version = (ua.match(/Firefox\/([0-9.]+)/) || [])[1] || ''; }
-        else if (ua.indexOf('Edg') > -1) { browser = 'Edge'; version = (ua.match(/Edg\/([0-9.]+)/) || [])[1] || ''; }
-        else if (ua.indexOf('Chrome') > -1) { browser = 'Chrome'; version = (ua.match(/Chrome\/([0-9.]+)/) || [])[1] || ''; }
-        else if (ua.indexOf('Safari') > -1) { browser = 'Safari'; version = (ua.match(/Version\/([0-9.]+)/) || [])[1] || ''; }
-        return { browser, version };
-      }
-
-      function getOS() {
-        const ua = navigator.userAgent;
-        if (ua.indexOf('Win') > -1) return 'Windows';
-        if (ua.indexOf('Mac') > -1) return 'macOS';
-        if (ua.indexOf('Linux') > -1) return 'Linux';
-        if (ua.indexOf('Android') > -1) return 'Android';
-        if (ua.indexOf('like Mac') > -1) return 'iOS';
-        return 'Unknown';
-      }
-
-      function trackVisitor() {
-        try {
-          const browserInfo = getBrowserInfo();
-          const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-          const pageViews = parseInt(sessionStorage.getItem('pf_page_views') || '0') + 1;
-          sessionStorage.setItem('pf_page_views', pageViews.toString());
-
-          const data = {
-            origin: window.location.origin,
-            timestamp: new Date().toISOString(),
-            page: window.location.pathname + window.location.hash,
-            url: window.location.href,
-            referrer: document.referrer || 'Direct',
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            sessionId: getSessionId(),
-            returningVisitor: isReturningVisitor(),
-            browser: browserInfo.browser,
-            browserVersion: browserInfo.version,
-            os: getOS(),
-            screenWidth: screen.width,
-            screenHeight: screen.height,
-            viewportWidth: window.innerWidth,
-            viewportHeight: window.innerHeight,
-            pixelRatio: window.devicePixelRatio || 1,
-            isMobile: isMobile,
-            isDesktop: !isMobile,
-            cookiesEnabled: navigator.cookieEnabled,
-            onlineStatus: navigator.onLine,
-            pageViewsInSession: pageViews,
-            pageTitle: document.title,
-            connectionType: (navigator.connection || {}).effectiveType || 'unknown'
+        function getUTMParams() {
+          var params = new URLSearchParams(window.location.search);
+          return {
+            utmSource: params.get('utm_source') || '',
+            utmMedium: params.get('utm_medium') || '',
+            utmCampaign: params.get('utm_campaign') || '',
+            utmTerm: params.get('utm_term') || '',
+            utmContent: params.get('utm_content') || ''
           };
-
-          fetch(TRACKING_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          }).then(function() {
-            console.log('[Tracking] Visitor data sent');
-          }).catch(function(err) {
-            console.error('[Tracking] Error:', err);
-          });
-        } catch (e) {
-          console.error('[Tracking] Exception:', e);
         }
-      }
 
-      // Track on page load
-      if (document.readyState === 'complete') {
-        trackVisitor();
-      } else {
-        window.addEventListener('load', trackVisitor);
-      }
-    })();
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            var loadTime = 0;
+            if (window.performance && window.performance.timing) {
+              var timing = window.performance.timing;
+              loadTime = timing.loadEventEnd - timing.navigationStart;
+            }
+
+            var utmParams = getUTMParams();
+
+            var data = {
+              origin: window.location.origin,
+              timestamp: new Date().toISOString(),
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              timezoneOffset: new Date().getTimezoneOffset(),
+              page: window.location.href,
+              pathname: window.location.pathname,
+              referrer: document.referrer || '',
+              pageTitle: document.title,
+              language: navigator.language,
+              deviceType: getDeviceType(),
+              screenOrientation: screen.orientation ? screen.orientation.type : 'unknown',
+              connectionType: getConnectionType(),
+              loadTime: loadTime > 0 ? loadTime : '',
+              utmSource: utmParams.utmSource,
+              utmMedium: utmParams.utmMedium,
+              utmCampaign: utmParams.utmCampaign,
+              utmTerm: utmParams.utmTerm,
+              utmContent: utmParams.utmContent,
+              prefersColorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            };
+
+            var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyk8VzLygqFmid0cSB5Qge8yRKRV-hJNvWlCSZBPrOCnyJyTd21d-6mNRjyJ7NIr_-36Q/exec';
+
+            fetch(SCRIPT_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            }).then(function() {
+              console.log('[Tracking] Data sent');
+            }).catch(function(err) {
+              console.log('[Tracking] Error:', err);
+            });
+          }, 100);
+        });
+      })();
     </script>
   </body>
 </html>
