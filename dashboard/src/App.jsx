@@ -14,6 +14,8 @@ import CurrentPrices from './components/CurrentPrices';
 import ForecastChart from './components/ForecastChart';
 import ForecastKpis from './components/ForecastKpis';
 import ForecastTable from './components/ForecastTable';
+import TreemapChart from './components/TreemapChart';
+import LollipopChart from './components/LollipopChart';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import { AlertCircle } from 'lucide-react';
@@ -262,11 +264,27 @@ export default function App() {
 
         {activeTab === 'categorias' && (
           <div className="space-y-6">
-            <CategoryChart
-              aggregations={aggregations}
-              filteredData={filteredData}
-              onCategoriaClick={handleCategoriaClick}
-              selectedCategoria={interactiveFilters.categoria}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <CategoryChart
+                aggregations={aggregations}
+                filteredData={filteredData}
+                onCategoriaClick={handleCategoriaClick}
+                selectedCategoria={interactiveFilters.categoria}
+              />
+              <TreemapChart
+                data={aggregated?.hierarquia}
+                title="Hierarquia de Produtos Florestais"
+                width={550}
+                height={450}
+                onCategoriaClick={handleCategoriaClick}
+              />
+            </div>
+            <LollipopChart
+              data={aggregations?.topProdutos || filteredData}
+              title="Ranking de Produtos por Preco"
+              width={700}
+              height={500}
+              limit={15}
             />
             <div className="chart-container">
               <h3 className="text-lg font-semibold text-neutral-800 mb-4">
