@@ -12,7 +12,12 @@ const CATEGORY_COLORS = {
   'PFNM': '#7c3aed',
   'Sementes': '#ca8a04',
   'Residuos': '#64748b',
-  'Produtos Beneficiados': '#be185d'
+  'Produtos Beneficiados': '#be185d',
+  'MUDAS': '#059669',
+  'TORAS': '#15803d',
+  'LENHA': '#ea580c',
+  'CAVACOS': '#0284c7',
+  'PRODUTOS_NAO_MADEIREIROS': '#7c3aed'
 }
 
 export default function LollipopChart({
@@ -24,15 +29,55 @@ export default function LollipopChart({
   onProdutoClick
 }) {
   const chartData = useMemo(() => {
-    if (!data || data.length === 0) return null
+    if (!data) return null
+
+    let items = []
+
+    // Handle array format (filteredData from useFilteredData)
+    if (Array.isArray(data)) {
+      // Group by produto and calculate average
+      const byProduto = {}
+      data.forEach(d => {
+        const produto = d.produto || d.name || 'Desconhecido'
+        const preco = d.preco || d.preco_medio || d.media || 0
+        const categoria = d.categoria || d.category || ''
+
+        if (!byProduto[produto]) {
+          byProduto[produto] = { produto, categoria, precos: [], count: 0 }
+        }
+        if (preco > 0) {
+          byProduto[produto].precos.push(preco)
+          byProduto[produto].count++
+        }
+      })
+
+      items = Object.values(byProduto)
+        .filter(d => d.precos.length > 0)
+        .map(d => ({
+          produto: d.produto,
+          categoria: d.categoria,
+          preco_medio: d.precos.reduce((a, b) => a + b, 0) / d.precos.length,
+          count: d.count
+        }))
+    }
+    // Handle object format (byProduto from useAggregations)
+    else if (typeof data === 'object') {
+      items = Object.entries(data)
+        .filter(([_, d]) => d && (d.media > 0 || d.preco_medio > 0))
+        .map(([produto, d]) => ({
+          produto,
+          categoria: d.categoria || '',
+          preco_medio: d.media || d.preco_medio || 0,
+          count: d.count || 0
+        }))
+    }
+
+    if (items.length === 0) return null
 
     // Sort by price and take top N
-    const sorted = [...data]
-      .filter(d => d.preco_medio > 0)
+    const sorted = items
       .sort((a, b) => b.preco_medio - a.preco_medio)
       .slice(0, limit)
-
-    if (sorted.length === 0) return null
 
     const maxValue = Math.max(...sorted.map(d => d.preco_medio))
 
@@ -41,9 +86,9 @@ export default function LollipopChart({
 
   if (!chartData) {
     return (
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold text-dark-700 mb-4">{title}</h3>
-        <div className="h-64 flex items-center justify-center text-dark-400">
+      <div className="bg-white rounded-xl border border-neutral-100 p-6">
+        <h3 className="text-lg font-semibold text-neutral-800 mb-4">{title}</h3>
+        <div className="h-64 flex items-center justify-center text-neutral-400">
           Sem dados disponiveis
         </div>
       </div>
@@ -69,8 +114,8 @@ export default function LollipopChart({
   }
 
   return (
-    <div className="card p-6">
-      <h3 className="text-lg font-semibold text-dark-700 mb-4">{title}</h3>
+    <div className="bg-white rounded-xl border border-neutral-100 p-6">
+      <h3 className="text-lg font-semibold text-neutral-800 mb-4">{title}</h3>
 
       <svg width={width} height={height}>
         <g transform={`translate(${MARGIN.left}, ${MARGIN.top})`}>
@@ -109,7 +154,7 @@ export default function LollipopChart({
 
             return (
               <g
-                key={item.produto}
+                key={`${item.produto}-${i}`}
                 className="group cursor-pointer"
                 onClick={() => onProdutoClick?.(item)}
               >
@@ -144,19 +189,18 @@ export default function LollipopChart({
                   strokeWidth={2}
                 >
                   <title>
-                    {`${item.produto}\nCategoria: ${item.categoria}\nPreco: ${formatValue(item.preco_medio)}`}
+                    {`${item.produto}\nCategoria: ${item.categoria || 'N/A'}\nPreco: ${formatValue(item.preco_medio)}`}
                   </title>
                 </circle>
 
-                {/* Value label on hover */}
+                {/* Value label - always visible */}
                 <text
                   x={xEnd + 12}
                   y={y}
                   alignmentBaseline="middle"
                   fill="#334155"
-                  fontSize={11}
+                  fontSize={10}
                   fontFamily="monospace"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   {formatValue(item.preco_medio)}
                 </text>
@@ -191,7 +235,7 @@ export default function LollipopChart({
         {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([cat, color]) => (
           <div key={cat} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-xs text-dark-600">{cat}</span>
+            <span className="text-xs text-neutral-600">{cat}</span>
           </div>
         ))}
       </div>
