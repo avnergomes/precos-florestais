@@ -272,7 +272,7 @@ export default function App() {
                 selectedCategoria={interactiveFilters.categoria}
               />
               <TreemapChart
-                data={aggregated?.hierarquia}
+                data={aggregations?.hierarquia}
                 title="Hierarquia de Produtos Florestais"
                 width={550}
                 height={450}

@@ -183,6 +183,30 @@ export function useAggregations(filteredData) {
 
     const periodos = Object.keys(byPeriodo).sort();
 
+    // Top produtos ordenados por preço médio
+    const topProdutos = Object.entries(byProduto)
+      .map(([produto, data]) => ({
+        produto,
+        ...data
+      }))
+      .sort((a, b) => b.media - a.media)
+      .slice(0, 20);
+
+    // Hierarquia filtrada para TreemapChart
+    const hierarquia = Object.entries(byCategoria).map(([categoria, catData]) => ({
+      name: categoria,
+      value: catData.media * catData.count,
+      children: Object.entries(byProduto)
+        .filter(([, prodData]) => prodData.categoria === categoria)
+        .map(([produto, prodData]) => ({
+          name: produto,
+          value: prodData.media * prodData.count,
+          media: prodData.media,
+          count: prodData.count,
+        }))
+        .sort((a, b) => b.value - a.value)
+    })).sort((a, b) => b.value - a.value);
+
     return {
       precoMedio,
       precoMin,
@@ -192,7 +216,9 @@ export function useAggregations(filteredData) {
       byPeriodo,
       byRegiao,
       byCategoria,
-      byProduto
+      byProduto,
+      topProdutos,
+      hierarquia,
     };
   }, [filteredData]);
 }
