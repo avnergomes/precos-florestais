@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Preprocessamento dos dados de Precos Florestais - DERAL/SEAB Parana
 Consolida todos os arquivos Excel em formato JSON para o dashboard
@@ -18,7 +18,7 @@ try:
 except Exception:
     pdfplumber = None
 
-BASE_DIR = Path("E:/Preços Florestais")
+BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "dashboard" / "public" / "data"
 
