@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 
@@ -8,17 +8,18 @@ export function useData() {
   const [geoData, setGeoData] = useState(null);
   const [forecasts, setForecasts] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isForecastLoading, setIsForecastLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Carregar dados essenciais na inicialização (detailed, aggregated, geoData)
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
-        const [detailedRes, aggregatedRes, geoRes, forecastRes] = await Promise.all([
+        const [detailedRes, aggregatedRes, geoRes] = await Promise.all([
           fetch(`${BASE_URL}data/detailed.json`),
           fetch(`${BASE_URL}data/aggregated.json`),
-          fetch(`${BASE_URL}data/regioes.geojson`),
-          fetch(`${BASE_URL}data/forecasts.json`)
+          fetch(`${BASE_URL}data/regioes.geojson`)
         ]);
 
         if (!detailedRes.ok || !aggregatedRes.ok) {
@@ -32,11 +33,6 @@ export function useData() {
 
         setData(detailedData);
         setAggregated(aggregatedData);
-
-        if (forecastRes.ok) {
-          const forecastData = await forecastRes.json();
-          setForecasts(forecastData);
-        }
 
         if (geoRes.ok) {
           const geoJson = await geoRes.json();
@@ -52,7 +48,26 @@ export function useData() {
     loadData();
   }, []);
 
-  return { data, aggregated, geoData, forecasts, loading, error };
+  // Função para carregar forecasts.json sob demanda (9.4MB)
+  const loadForecastData = useCallback(async () => {
+    if (forecasts || isForecastLoading) return;
+
+    try {
+      setIsForecastLoading(true);
+      const res = await fetch(`${BASE_URL}data/forecasts.json`);
+      if (!res.ok) {
+        throw new Error('Erro ao carregar previsões');
+      }
+      const forecastData = await res.json();
+      setForecasts(forecastData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsForecastLoading(false);
+    }
+  }, [forecasts, isForecastLoading]);
+
+  return { data, aggregated, geoData, forecasts, loading, isForecastLoading, error, loadForecastData };
 }
 
 export function useFilteredData(data, filters) {
