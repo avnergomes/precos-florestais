@@ -12,11 +12,23 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import xgboost as xgb
-import lightgbm as lgb
 from sklearn.ensemble import RandomForestRegressor
 
-BASE_DIR = Path.cwd()
+try:
+    import xgboost as xgb
+    HAS_XGB = True
+except ImportError:
+    HAS_XGB = False
+    print("⚠️  xgboost não encontrado — modelos XGBoost serão ignorados")
+
+try:
+    import lightgbm as lgb
+    HAS_LGB = True
+except ImportError:
+    HAS_LGB = False
+    print("⚠️  lightgbm não encontrado — modelos LightGBM serão ignorados")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "dashboard" / "public" / "data" / "detailed.json"
 OUTPUT_PATH = BASE_DIR / "dashboard" / "public" / "data" / "forecasts.json"
 
@@ -116,6 +128,8 @@ def build_next_features(history, period, lags, windows):
 
 def train_model(model_id, X, y):
     if model_id == "xgboost":
+        if not HAS_XGB:
+            return None
         model = xgb.XGBRegressor(
             n_estimators=80,
             max_depth=3,
@@ -127,6 +141,8 @@ def train_model(model_id, X, y):
             verbosity=0
         )
     elif model_id == "lightgbm":
+        if not HAS_LGB:
+            return None
         model = lgb.LGBMRegressor(
             n_estimators=80,
             learning_rate=0.08,
