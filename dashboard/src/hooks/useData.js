@@ -13,14 +13,19 @@ export function useData() {
 
   // Carregar dados essenciais na inicialização (detailed, aggregated, geoData)
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     async function loadData() {
       try {
         setLoading(true);
         const [detailedRes, aggregatedRes, geoRes] = await Promise.all([
-          fetch(`${BASE_URL}data/detailed.json`),
-          fetch(`${BASE_URL}data/aggregated.json`),
-          fetch(`${BASE_URL}data/regioes.geojson`)
+          fetch(`${BASE_URL}data/detailed.json`, { signal }),
+          fetch(`${BASE_URL}data/aggregated.json`, { signal }),
+          fetch(`${BASE_URL}data/regioes.geojson`, { signal }).catch(() => null)
         ]);
+
+        if (signal.aborted) return;
 
         if (!detailedRes.ok || !aggregatedRes.ok) {
           throw new Error('Erro ao carregar dados');
@@ -31,39 +36,51 @@ export function useData() {
           aggregatedRes.json()
         ]);
 
-        setData(detailedData);
-        setAggregated(aggregatedData);
+        if (!signal.aborted) {
+          setData(detailedData);
+          setAggregated(aggregatedData);
 
-        if (geoRes.ok) {
-          const geoJson = await geoRes.json();
-          setGeoData(geoJson);
+          if (geoRes?.ok) {
+            const geoJson = await geoRes.json();
+            setGeoData(geoJson);
+          }
         }
       } catch (err) {
-        setError(err.message);
+        if (err.name !== 'AbortError' && !signal.aborted) {
+          setError(err.message);
+        }
       } finally {
-        setLoading(false);
+        if (!signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
     loadData();
+    return () => controller.abort();
   }, []);
 
   // Função para carregar forecasts.json sob demanda (9.4MB)
   const loadForecastData = useCallback(async () => {
     if (forecasts || isForecastLoading) return;
 
+    const controller = new AbortController();
     try {
       setIsForecastLoading(true);
-      const res = await fetch(`${BASE_URL}data/forecasts.json`);
-      if (!res.ok) {
-        throw new Error('Erro ao carregar previsões');
-      }
+      const res = await fetch(`${BASE_URL}data/forecasts.json`, { signal: controller.signal });
+      if (!res.ok) throw new Error('Erro ao carregar previsões');
       const forecastData = await res.json();
-      setForecasts(forecastData);
+      if (!controller.signal.aborted) {
+        setForecasts(forecastData);
+      }
     } catch (err) {
-      setError(err.message);
+      if (err.name !== 'AbortError') {
+        setError(err.message);
+      }
     } finally {
-      setIsForecastLoading(false);
+      if (!controller.signal.aborted) {
+        setIsForecastLoading(false);
+      }
     }
   }, [forecasts, isForecastLoading]);
 
