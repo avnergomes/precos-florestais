@@ -22,7 +22,14 @@ import { AlertCircle } from 'lucide-react';
 import { getCategoryLabel } from './utils/format';
 
 export default function App() {
-  const { data, aggregated, geoData, forecasts, loading, error } = useData();
+  const { data, aggregated, geoData, forecasts, loading, error, loadForecastData } = useData();
+
+  // Lazy load forecast data when previsoes tab is activated
+  useEffect(() => {
+    if (activeTab === 'previsoes' && !forecasts) {
+      loadForecastData();
+    }
+  }, [activeTab, forecasts, loadForecastData]);
   const [activeTab, setActiveTab] = useState('preco-atual');
   const [filters, setFilters] = useState({
     anos: [],
