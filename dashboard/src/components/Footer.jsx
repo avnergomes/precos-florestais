@@ -87,6 +87,22 @@ export default function Footer({ stats }) {
               >
                 Censo Paraná
               </a>
+              <a
+                href="https://avnergomes.github.io/credito-rural-parana/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-2.5 py-1 text-[10px] rounded-full border border-neutral-600 text-neutral-300 hover:text-forest-300 hover:border-forest-400 transition-colors"
+              >
+                Crédito Rural
+              </a>
+              <a
+                href="https://avnergomes.github.io/saude-parana/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-2.5 py-1 text-[10px] rounded-full border border-neutral-600 text-neutral-300 hover:text-forest-300 hover:border-forest-400 transition-colors"
+              >
+                Saúde Paraná
+              </a>
             </div>
           </div>
 
