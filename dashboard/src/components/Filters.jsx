@@ -1,7 +1,10 @@
-import { Filter, X, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
+import { Filter, X, RotateCcw, ChevronDown } from 'lucide-react';
 import { getCategoryLabel } from '../utils/format';
 
 export default function Filters({ aggregated, filters, setFilters }) {
+  const [expanded, setExpanded] = useState(true);
+
   if (!aggregated) return null;
 
   const { anos, regioes, categorias, subcategorias, produtos } = aggregated;
@@ -65,6 +68,11 @@ export default function Filters({ aggregated, filters, setFilters }) {
     filters.categorias.length > 0 || filters.subcategorias.length > 0 ||
     filters.produtos.length > 0;
 
+  const activeFilterCount = [
+    filters.anos, filters.regioes, filters.categorias,
+    filters.subcategorias, filters.produtos
+  ].filter(arr => arr.length > 0).length;
+
   // Get available subcategorias based on selected categoria
   const availableSubcategorias = filters.categorias.length > 0
     ? subcategorias[filters.categorias[0]] || []
@@ -77,23 +85,41 @@ export default function Filters({ aggregated, filters, setFilters }) {
 
   return (
     <div className="card p-4 mb-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-forest-600" />
           <h2 className="font-semibold text-neutral-800">Filtros</h2>
+          {activeFilterCount > 0 && (
+            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-forest-600 rounded-full">
+              {activeFilterCount}
+            </span>
+          )}
         </div>
-        {hasFilters && (
+        <div className="flex items-center gap-2">
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 text-sm text-neutral-500 hover:text-forest-600 transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Limpar
+            </button>
+          )}
           <button
-            onClick={clearFilters}
-            className="flex items-center gap-1 text-sm text-neutral-500 hover:text-forest-600 transition-colors"
+            onClick={() => setExpanded(prev => !prev)}
+            aria-label={expanded ? 'Recolher filtros' : 'Expandir filtros'}
+            className="p-1 rounded-lg hover:bg-neutral-100 transition-colors"
           >
-            <RotateCcw className="w-4 h-4" />
-            Limpar
+            <ChevronDown
+              className={`w-5 h-5 text-neutral-500 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}
+            />
           </button>
-        )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className={`filter-panel ${expanded ? '' : 'collapsed'}`}>
+      <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2">
         {/* Ano */}
         <div>
           <label className="block text-sm font-medium text-neutral-600 mb-1">
@@ -232,6 +258,8 @@ export default function Filters({ aggregated, filters, setFilters }) {
           ))}
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 }

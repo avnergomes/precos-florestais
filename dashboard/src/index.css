@@ -98,6 +98,56 @@
   .table-row {
     @apply border-b border-neutral-100 hover:bg-forest-50/60 transition-colors;
   }
+
+  .filter-panel {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.3s ease, opacity 0.2s ease;
+    opacity: 1;
+  }
+
+  .filter-panel.collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  .filter-panel > div {
+    overflow: hidden;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden bg-neutral-200 rounded-lg;
+  }
+
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  .chart-container-title {
+    @apply text-base font-semibold text-neutral-800 mb-4;
+  }
+
+  .active-filter-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium
+           border transition-all duration-200;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @layer utilities {

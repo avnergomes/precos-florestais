@@ -24,13 +24,13 @@ export default function ActiveFilters({ filters, onRemove, onClear }) {
       {activeFilters.map(([key, value]) => (
         <span
           key={key}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-forest-100 text-forest-800 rounded-full text-sm font-medium"
+          className="active-filter-badge bg-forest-100 text-forest-800 border-forest-200"
         >
           <span className="text-forest-600">{labels[key]}:</span>
           <span>{formatValue(key, value)}</span>
           <button
             onClick={() => onRemove(key)}
-            className="ml-0.5 p-0.5 hover:bg-forest-200 rounded-full transition-colors"
+            className="ml-0.5 p-0.5 hover:bg-forest-200 rounded-full transition-colors duration-200 hover:scale-110"
             aria-label={`Remover filtro ${labels[key]}`}
           >
             <X className="w-3.5 h-3.5" />

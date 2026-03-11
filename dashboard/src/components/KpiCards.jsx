@@ -2,7 +2,15 @@ import { TrendingUp, TrendingDown, DollarSign, BarChart2, Database } from 'lucid
 import { formatCurrency, formatNumber } from '../utils/format';
 
 export default function KpiCards({ aggregations, filteredData }) {
-  if (!aggregations) return null;
+  if (!aggregations) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className="skeleton h-24 md:h-28 rounded-2xl" />
+        ))}
+      </div>
+    );
+  }
 
   const { precoMedio, precoMin, precoMax, totalRegistros, byCategoria, byProduto } = aggregations;
 
@@ -51,7 +59,7 @@ export default function KpiCards({ aggregations, filteredData }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {cards.map((card, index) => (
-        <div key={index} className="stat-card">
+        <div key={index} className="stat-card transition-opacity duration-500" style={{ animationDelay: `${index * 75}ms` }}>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="kpi-label">{card.label}</p>
