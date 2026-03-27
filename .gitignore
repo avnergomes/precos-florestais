@@ -37,3 +37,9 @@ npm-debug.log*
 
 # Google Apps Script (secrets)
 *.gs
+
+# Claude Code
+.claude/
+CLAUDE.md
+.claudeignore
+
