@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas numpy scikit-learn
+          pip install -r scripts/requirements.txt
 
       - name: Preprocess data
         run: |
