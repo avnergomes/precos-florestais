@@ -1,6 +1,8 @@
 name: Data Pipeline - Process Forest Prices
 
 on:
+  schedule:
+    - cron: '0 6 15 1,4,7,10 *'  # Trimestral: 15 de Jan/Abr/Jul/Out, 6h UTC
   # Manual trigger - execute quando novos dados forem adicionados
   workflow_dispatch:
     inputs:
