@@ -1,9 +1,10 @@
+// ATLAS-A11Y-HEX-SWEPT
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { formatCurrency } from '../utils/format';
 
 const MODEL_META = {
-  xgboost:       { color: '#ef4444', bg: 'bg-red-100',    text: 'text-red-600',    label: 'XGBoost' },
-  lightgbm:      { color: '#8b5cf6', bg: 'bg-purple-100', text: 'text-purple-600', label: 'LightGBM' },
+  xgboost:       { color: '#D55E00', bg: 'bg-red-100',    text: 'text-red-600',    label: 'XGBoost' },
+  lightgbm:      { color: '#CC79A7', bg: 'bg-purple-100', text: 'text-purple-600', label: 'LightGBM' },
   random_forest: { color: '#f97316', bg: 'bg-orange-100', text: 'text-orange-600', label: 'Random Forest' },
   naive:         { color: '#6b7280', bg: 'bg-gray-100',   text: 'text-gray-600',   label: 'Persistencia' },
   linear:        { color: '#3b82f6', bg: 'bg-blue-100',   text: 'text-blue-600',   label: 'Linear' },
@@ -11,7 +12,7 @@ const MODEL_META = {
 };
 
 function getMeta(key) {
-  return MODEL_META[key] || { color: '#6366f1', bg: 'bg-indigo-100', text: 'text-indigo-600', label: key };
+  return MODEL_META[key] || { color: '#7a4e88', bg: 'bg-indigo-100', text: 'text-indigo-600', label: key };
 }
 
 export default function ForecastKpis({ modelos = {}, historico = [], horizon = 12 }) {

@@ -1,22 +1,23 @@
+// ATLAS-A11Y-HEX-SWEPT
 import { useMemo } from 'react'
 import * as d3 from 'd3'
 
 const MARGIN = { top: 20, right: 60, bottom: 20, left: 180 }
 
 const CATEGORY_COLORS = {
-  'Toras': '#15803d',
+  'Toras': '#004a72',
   'Madeira Serrada': '#166534',
   'Energia': '#ea580c',
-  'Cavacos': '#0284c7',
+  'Cavacos': '#2d5f7f',
   'Mudas': '#059669',
   'PFNM': '#7c3aed',
   'Sementes': '#ca8a04',
-  'Residuos': '#64748b',
+  'Residuos': '#6e6453',
   'Produtos Beneficiados': '#be185d',
   'MUDAS': '#059669',
-  'TORAS': '#15803d',
+  'TORAS': '#004a72',
   'LENHA': '#ea580c',
-  'CAVACOS': '#0284c7',
+  'CAVACOS': '#2d5f7f',
   'PRODUTOS_NAO_MADEIREIROS': '#7c3aed'
 }
 
@@ -139,7 +140,7 @@ export default function LollipopChart({
               x={xScale(tick)}
               y={innerHeight + 15}
               textAnchor="middle"
-              fill="#64748b"
+              fill="#6e6453"
               fontSize={10}
             >
               {formatValue(tick)}
@@ -150,7 +151,7 @@ export default function LollipopChart({
           {items.map((item, i) => {
             const y = yScale(item.produto) + yScale.bandwidth() / 2
             const xEnd = xScale(item.preco_medio)
-            const color = CATEGORY_COLORS[item.categoria] || '#64748b'
+            const color = CATEGORY_COLORS[item.categoria] || '#6e6453'
 
             return (
               <g

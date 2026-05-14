@@ -1,3 +1,4 @@
+// ATLAS-A11Y-HEX-SWEPT
 /**
  * Funções de formatação para o dashboard
  */
@@ -67,7 +68,7 @@ export function getCategoryColor(categoria) {
   const colors = {
     'MUDAS': '#4A7C23',
     'TORAS': '#8B4513',
-    'LENHA': '#D97706',
+    'LENHA': '#a87f2d',
     'CAVACOS': '#6B7280',
     'PRODUTOSNAOMADEIREIROS': '#059669',
     'CUSTOSOPERACIONAIS': '#1F6FEB',
@@ -93,3 +94,7 @@ export function getVariationBadge(value) {
   if (value < -0.05) return 'badge-red';
   return 'badge-yellow';
 }
+
+// ATLAS-PALETTE-V1
+// Re-export the shared Atlas Editorial palette (daltonic-safe).
+export { CHART_COLORS, MAP_GRADIENTS, ATLAS_CATEGORICAL, ATLAS_FOREST, ATLAS_WATER, ATLAS_CLAY, ATLAS_EARTH, ATLAS_HARVEST, ATLAS_DIVERGING, ATLAS_CHROME, categoricalColor, sequentialColor } from './chart-palette.js';

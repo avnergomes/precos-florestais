@@ -1,3 +1,4 @@
+// ATLAS-A11Y-HEX-SWEPT
 import { useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -8,9 +9,9 @@ import { formatCurrency, formatPeriod, getCategoryColor, getCategoryLabel } from
 // Gera cores únicas para subcategorias baseado em hash
 function getSubcategoryColor(subcategoria, index) {
   const baseColors = [
-    '#4A7C23', '#1F6FEB', '#D97706', '#7C3AED', '#059669',
-    '#DC2626', '#0891B2', '#C026D3', '#65A30D', '#EA580C',
-    '#2563EB', '#16A34A', '#9333EA', '#CA8A04', '#0D9488'
+    '#4A7C23', '#1F6FEB', '#a87f2d', '#7C3AED', '#059669',
+    '#a8482c', '#0891B2', '#C026D3', '#65A30D', '#EA580C',
+    '#2563EB', '#005c8e', '#9333EA', '#CA8A04', '#0D9488'
   ];
   return baseColors[index % baseColors.length];
 }

@@ -1,15 +1,16 @@
+// ATLAS-A11Y-HEX-SWEPT
 import { useMemo, useState } from 'react'
 import * as d3 from 'd3'
 
 const CATEGORY_COLORS = {
-  'Toras': '#15803d',
+  'Toras': '#004a72',
   'Madeira Serrada': '#166534',
   'Energia': '#ea580c',
-  'Cavacos': '#0284c7',
+  'Cavacos': '#2d5f7f',
   'Mudas': '#059669',
   'PFNM': '#7c3aed',
   'Sementes': '#ca8a04',
-  'Residuos': '#64748b',
+  'Residuos': '#6e6453',
   'Produtos Beneficiados': '#be185d',
   'Custos Operacionais': '#475569'
 }
@@ -99,7 +100,7 @@ export default function TreemapChart({
       <svg width={width} height={height} className="mx-auto">
         {/* Category backgrounds */}
         {categories.map((cat, i) => {
-          const color = CATEGORY_COLORS[cat.data.name] || '#64748b'
+          const color = CATEGORY_COLORS[cat.data.name] || '#6e6453'
           return (
             <g key={`cat-${i}`}>
               <rect
@@ -135,7 +136,7 @@ export default function TreemapChart({
           const w = leaf.x1 - leaf.x0
           const h = leaf.y1 - leaf.y0
           const categoria = leaf.data.categoria || leaf.parent?.parent?.data.name
-          const color = CATEGORY_COLORS[categoria] || '#64748b'
+          const color = CATEGORY_COLORS[categoria] || '#6e6453'
           const isHovered = hoveredId === i
 
           return (

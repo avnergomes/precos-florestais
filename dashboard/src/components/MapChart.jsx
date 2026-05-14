@@ -1,3 +1,4 @@
+// ATLAS-A11Y-HEX-SWEPT
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { formatCurrency, formatNumber } from '../utils/format';
@@ -34,12 +35,12 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
 
   // Color gradient (forest green theme)
   const colorGradient = useMemo(() => [
-    '#dcfce7', // very light green
+    '#d9e6f0', // very light green
     '#bbf7d0', // light green
-    '#86efac', // medium-light green
+    '#87afcd', // medium-light green
     '#4ade80', // medium green
-    '#22c55e', // bright green
-    '#16a34a', // dark green
+    '#0072B2', // bright green
+    '#005c8e', // dark green
     '#166534', // very dark green
   ], []);
 
