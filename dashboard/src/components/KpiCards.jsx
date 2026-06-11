@@ -37,14 +37,14 @@ export default function KpiCards({ aggregations, filteredData }) {
       label: 'Total de Registros',
       value: formatNumber(totalRegistros, 0),
       icon: Database,
-      color: 'from-wood-500 to-wood-600',
+      color: 'from-earth-500 to-earth-600',
       subtext: `${Object.keys(byProduto).length} produtos diferentes`
     },
     {
       label: 'Variação no Período',
       value: variacao !== null ? `${variacao > 0 ? '+' : ''}${(variacao * 100).toFixed(1)}%` : '-',
       icon: variacao >= 0 ? TrendingUp : TrendingDown,
-      color: variacao >= 0 ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600',
+      color: variacao >= 0 ? 'from-sky-600 to-sky-700' : 'from-orange-600 to-orange-700',
       subtext: periodos.length >= 2 ? `${periodos[0]} a ${periodos[periodos.length - 1]}` : '-'
     },
     {

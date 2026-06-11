@@ -58,7 +58,7 @@ export default function ForecastKpis({ modelos = {}, historico = [], horizon = 1
               <p className="text-xl font-bold" style={{ color: meta.color }}>
                 {formatCurrency(lastForecast)}
               </p>
-              <p className={`text-sm flex items-center gap-1 ${variation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`text-sm flex items-center gap-1 ${variation >= 0 ? 'text-sky-700' : 'text-orange-700'}`}>
                 {variation >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                 {variation >= 0 ? '+' : ''}{variation.toFixed(1)}% vs. atual
               </p>

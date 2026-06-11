@@ -906,7 +906,7 @@ def fix_mojibake(text):
     if 'Ãƒ' in value or 'Ã‚' in value or 'ï¿½' in value:
         try:
             return value.encode('latin1').decode('utf-8')
-        except:
+        except Exception:
             return value
     return value
 
@@ -1319,7 +1319,7 @@ def parse_matrix_format(df, year, month, filepath):
                 if pd.notna(preco):
                     try:
                         preco_float = float(preco)
-                    except:
+                    except Exception:
                         continue
                     if preco_float > 0:
                         records.append({
@@ -1498,7 +1498,7 @@ def parse_long_format_sheet(df, sheet_name, filename):
                 if pd.notna(preco):
                     try:
                         preco_float = float(preco)
-                    except:
+                    except Exception:
                         continue
                     if preco_float > 0:
                         records.append({
@@ -1568,7 +1568,7 @@ def parse_old_sheet(df, year, month, sheet_name, filename):
                 if pd.notna(preco):
                     try:
                         preco_float = float(preco)
-                    except:
+                    except Exception:
                         continue
                     if preco_float > 0:
                         records.append({
@@ -1593,7 +1593,7 @@ def parse_old_excel(filepath, year, month):
     try:
         try:
             xl = pd.ExcelFile(filepath)
-        except:
+        except Exception:
             xl = pd.ExcelFile(filepath, engine='xlrd')
     except Exception as e:
         print(f"  Erro ao ler {filepath}: {e}")
@@ -1603,7 +1603,7 @@ def parse_old_excel(filepath, year, month):
         try:
             try:
                 df = pd.read_excel(filepath, sheet_name=sheet_name, header=None)
-            except:
+            except Exception:
                 df = pd.read_excel(filepath, sheet_name=sheet_name, header=None, engine='xlrd')
         except Exception as e:
             print(f"  Erro ao ler {filepath} ({sheet_name}): {e}")

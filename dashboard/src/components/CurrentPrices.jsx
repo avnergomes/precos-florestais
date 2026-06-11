@@ -192,7 +192,7 @@ export default function CurrentPrices({ filteredData, aggregated }) {
     const percent = (value * 100).toFixed(1);
     if (value > 0.01) {
       return (
-        <span className="inline-flex items-center gap-1 text-green-600 font-medium">
+        <span className="inline-flex items-center gap-1 text-sky-700 font-medium">
           <TrendingUp className="w-3 h-3" />
           +{percent}%
         </span>
@@ -200,7 +200,7 @@ export default function CurrentPrices({ filteredData, aggregated }) {
     }
     if (value < -0.01) {
       return (
-        <span className="inline-flex items-center gap-1 text-red-600 font-medium">
+        <span className="inline-flex items-center gap-1 text-orange-700 font-medium">
           <TrendingDown className="w-3 h-3" />
           {percent}%
         </span>
@@ -278,13 +278,13 @@ export default function CurrentPrices({ filteredData, aggregated }) {
             <p className="text-xs text-neutral-500">Preço Médio Geral</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-sky-700">
               {displayData.filter(d => d.variacao !== null && d.variacao > 0).length}
             </p>
             <p className="text-xs text-neutral-500">Em Alta</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-2xl font-bold text-orange-700">
               {displayData.filter(d => d.variacao !== null && d.variacao < 0).length}
             </p>
             <p className="text-xs text-neutral-500">Em Baixa</p>

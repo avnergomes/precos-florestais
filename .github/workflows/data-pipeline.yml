@@ -41,7 +41,9 @@ jobs:
           python scripts/preprocess_data.py
 
       - name: Generate forecasts
-        if: ${{ inputs.generate_forecasts }}
+        # No cron, inputs.generate_forecasts é vazio — sem este OR as
+        # previsões nunca eram geradas nas execuções agendadas.
+        if: ${{ github.event_name == 'schedule' || inputs.generate_forecasts }}
         run: |
           python scripts/generate_forecasts.py
 
@@ -62,3 +64,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: update processed data and forecasts [skip ci]"
           git push
+
+      - name: Trigger deploy workflow
+        # O [skip ci] impede o deploy automático no push do bot;
+        # o dispatch garante que o site acompanhe os dados novos.
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main'
+            })

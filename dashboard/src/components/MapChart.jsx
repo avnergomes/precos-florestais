@@ -8,6 +8,9 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
   const mapInstanceRef = useRef(null);
   const layerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
+  // O import dinâmico do Leaflet termina depois do segundo useEffect rodar;
+  // este estado re-dispara a criação da camada quando o mapa fica pronto.
+  const [mapReady, setMapReady] = useState(false);
 
   const regionData = useMemo(() => {
     if (!aggregations?.byRegiao) return {};
@@ -33,15 +36,16 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
     };
   }, [aggregations]);
 
-  // Color gradient (forest green theme)
+  // Sequencial de matiz único (azul/water) — luminância monotônica,
+  // segura para daltônicos (antes intercalava verdes e azuis)
   const colorGradient = useMemo(() => [
-    '#d9e6f0', // very light green
-    '#bbf7d0', // light green
-    '#87afcd', // medium-light green
-    '#4ade80', // medium green
-    '#0072B2', // bright green
-    '#005c8e', // dark green
-    '#166534', // very dark green
+    '#eff6fc',
+    '#d9e6f0',
+    '#b4cce0',
+    '#87afcd',
+    '#5d8fb5',
+    '#3d729c',
+    '#254e69',
   ], []);
 
   useEffect(() => {
@@ -75,6 +79,7 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
       }).addTo(map);
 
       mapInstanceRef.current = map;
+      setMapReady(true);
       setIsLoading(false);
     }).catch(err => {
       console.error('Error loading Leaflet:', err);
@@ -85,12 +90,13 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+        setMapReady(false);
       }
     };
   }, [geoData]);
 
   useEffect(() => {
-    if (!mapInstanceRef.current || !geoData) return;
+    if (!mapReady || !mapInstanceRef.current || !geoData) return;
 
     import('leaflet').then(L => {
       // Remove existing layer
@@ -106,9 +112,16 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
         return colorGradient[index];
       };
 
+      // Lookup tolerante a acentos: o geojson tem nomes acentuados
+      // (Maringá, Campo Mourão) e o pipeline grava sem acento.
+      const normalize = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const regionDataNorm = {};
+      Object.entries(regionData).forEach(([k, v]) => { regionDataNorm[normalize(k)] = v; });
+      const lookupRegion = (nome) => regionData[nome] ?? regionDataNorm[normalize(nome)];
+
       const style = (feature) => {
         const regiao = feature.properties?.regiao;
-        const rData = regionData[regiao];
+        const rData = lookupRegion(regiao);
         const value = rData ? rData.media : 0;
 
         return {
@@ -123,7 +136,7 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
       const onEachFeature = (feature, layer) => {
         const regiao = feature.properties?.regiao || 'Desconhecido';
         const numMunicipios = feature.properties?.num_municipios || 0;
-        const rData = regionData[regiao];
+        const rData = lookupRegion(regiao);
 
         const media = rData?.media || 0;
         const count = rData?.count || 0;
@@ -177,7 +190,7 @@ export default function MapChart({ aggregations, geoData, onRegiaoClick, selecte
         console.warn('Could not fit bounds:', e);
       }
     });
-  }, [geoData, regionData, minVal, maxVal, colorGradient]);
+  }, [geoData, regionData, minVal, maxVal, colorGradient, mapReady]);
 
   return (
     <div className="chart-container">

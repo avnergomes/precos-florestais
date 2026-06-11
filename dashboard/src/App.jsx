@@ -303,11 +303,11 @@ export default function App() {
                   .sort((a, b) => b[1].media - a[1].media)
                   .map(([categoria, data]) => {
                     const labels = {
-                      'MUDAS': { name: 'Mudas', color: 'bg-forest-100 text-forest-800' },
-                      'TORAS': { name: 'Toras', color: 'bg-wood-100 text-wood-800' },
-                      'LENHA': { name: 'Lenha', color: 'bg-amber-100 text-amber-800' },
-                      'CAVACOS': { name: 'Cavacos', color: 'bg-neutral-200 text-neutral-800' },
-                      'PRODUTOS_NAO_MADEIREIROS': { name: 'Não Madeireiros', color: 'bg-emerald-100 text-emerald-800' }
+                      'Mudas': { name: 'Mudas', color: 'bg-forest-100 text-forest-800' },
+                      'Toras': { name: 'Toras', color: 'bg-earth-100 text-earth-800' },
+                      'Madeira Serrada': { name: 'Madeira Serrada', color: 'bg-harvest-100 text-harvest-800' },
+                      'Cavacos': { name: 'Cavacos', color: 'bg-neutral-200 text-neutral-800' },
+                      'PFNM': { name: 'Não Madeireiros (PFNM)', color: 'bg-water-100 text-water-800' }
                     };
                     const label = labels[categoria] || { name: categoria, color: 'bg-neutral-100' };
                     return (

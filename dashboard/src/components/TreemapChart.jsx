@@ -25,39 +25,54 @@ export default function TreemapChart({
   const [hoveredId, setHoveredId] = useState(null)
 
   const chartData = useMemo(() => {
-    if (!data || Object.keys(data).length === 0) return null
+    if (!data) return null
 
-    // Build hierarchy: categoria > subcategoria > produto
     const root = { name: 'Produtos', children: [] }
 
-    Object.entries(data).forEach(([categoria, subcats]) => {
-      if (typeof subcats !== 'object') return
-
-      const catNode = { name: categoria, children: [] }
-
-      Object.entries(subcats).forEach(([subcat, produtos]) => {
-        if (!Array.isArray(produtos)) return
-
-        const subcatNode = {
-          name: subcat,
-          categoria,
-          children: produtos.map(p => ({
-            name: typeof p === 'string' ? p : p.produto || p.name,
-            categoria,
-            subcategoria: subcat,
-            value: 1 // Equal weight for products
-          }))
-        }
-
-        if (subcatNode.children.length > 0) {
-          catNode.children.push(subcatNode)
+    if (Array.isArray(data)) {
+      // Formato de useData.hierarquia: [{ name, value, children: [{ name, value, ... }] }]
+      data.forEach(cat => {
+        if (!cat?.name) return
+        const children = (cat.children || []).map(p => ({
+          name: p.name,
+          categoria: cat.name,
+          value: p.value > 0 ? p.value : 1,
+        }))
+        if (children.length > 0) {
+          root.children.push({ name: cat.name, children })
         }
       })
+    } else if (typeof data === 'object' && Object.keys(data).length > 0) {
+      // Formato legado: { categoria: { subcategoria: [produtos] } }
+      Object.entries(data).forEach(([categoria, subcats]) => {
+        if (typeof subcats !== 'object') return
 
-      if (catNode.children.length > 0) {
-        root.children.push(catNode)
-      }
-    })
+        const catNode = { name: categoria, children: [] }
+
+        Object.entries(subcats).forEach(([subcat, produtos]) => {
+          if (!Array.isArray(produtos)) return
+
+          const subcatNode = {
+            name: subcat,
+            categoria,
+            children: produtos.map(p => ({
+              name: typeof p === 'string' ? p : p.produto || p.name,
+              categoria,
+              subcategoria: subcat,
+              value: 1 // Equal weight for products
+            }))
+          }
+
+          if (subcatNode.children.length > 0) {
+            catNode.children.push(subcatNode)
+          }
+        })
+
+        if (catNode.children.length > 0) {
+          root.children.push(catNode)
+        }
+      })
+    }
 
     if (root.children.length === 0) return null
 

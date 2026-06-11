@@ -83,18 +83,6 @@ export function getCategoryColor(categoria) {
   return colors[key] || hashToColor(key);
 }
 
-export function getVariationColor(value) {
-  if (value > 0.05) return 'text-green-600';
-  if (value < -0.05) return 'text-red-600';
-  return 'text-yellow-600';
-}
-
-export function getVariationBadge(value) {
-  if (value > 0.05) return 'badge-green';
-  if (value < -0.05) return 'badge-red';
-  return 'badge-yellow';
-}
-
 // ATLAS-PALETTE-V1
 // Re-export the shared Atlas Editorial palette (daltonic-safe).
 export { CHART_COLORS, MAP_GRADIENTS, ATLAS_CATEGORICAL, ATLAS_FOREST, ATLAS_WATER, ATLAS_CLAY, ATLAS_EARTH, ATLAS_HARVEST, ATLAS_DIVERGING, ATLAS_CHROME, categoricalColor, sequentialColor } from './chart-palette.js';
