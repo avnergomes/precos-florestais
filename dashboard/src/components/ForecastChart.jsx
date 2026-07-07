@@ -14,22 +14,27 @@ import {
 } from 'recharts';
 import { formatCurrency, formatPeriod } from '../utils/format';
 
+// Cores Okabe-Ito bem separadas (daltonico-seguras) + tracejado distinto por
+// modelo como redundancia nao-cromatica: linhas sobrepostas nunca dependem
+// so da cor para serem identificadas.
 const MODEL_STYLES = {
-  xgboost:       { color: '#D55E00', label: 'XGBoost' },
-  lightgbm:      { color: '#CC79A7', label: 'LightGBM' },
-  random_forest: { color: '#f97316', label: 'Random Forest' },
-  naive:         { color: '#6b7280', label: 'Persistencia' },
-  linear:        { color: '#3b82f6', label: 'Linear' },
-  arima:         { color: '#06b6d4', label: 'ARIMA' },
+  xgboost:       { color: '#D55E00', label: 'XGBoost', dash: '6 3' },
+  lightgbm:      { color: '#CC79A7', label: 'LightGBM', dash: '10 4' },
+  random_forest: { color: '#E69F00', label: 'Random Forest', dash: '3 3' },
+  naive:         { color: '#6e6453', label: 'Persistencia', dash: '1 4' },
+  linear:        { color: '#0072B2', label: 'Linear', dash: '8 4 2 4' },
+  arima:         { color: '#009E73', label: 'ARIMA', dash: '2 3' },
 };
 
-const FALLBACK_COLORS = ['#7a4e88', '#ec4899', '#14b8a6', '#eab308'];
+const FALLBACK_COLORS = ['#56B4E9', '#F0E442', '#2a2419', '#917235'];
+const FALLBACK_DASHES = ['6 3', '10 4', '3 3', '8 4 2 4'];
 
 function getModelStyle(key, index) {
   if (MODEL_STYLES[key]) return MODEL_STYLES[key];
   return {
     color: FALLBACK_COLORS[index % FALLBACK_COLORS.length],
     label: key,
+    dash: FALLBACK_DASHES[index % FALLBACK_DASHES.length],
   };
 }
 
@@ -367,7 +372,7 @@ export default function ForecastChart({
                 dataKey={key}
                 stroke={style.color}
                 strokeWidth={isBest ? 2.5 : 1.5}
-                strokeDasharray={isBest ? undefined : '6 3'}
+                strokeDasharray={isBest ? undefined : (style.dash || '6 3')}
                 dot={false}
                 connectNulls
                 legendType="none"

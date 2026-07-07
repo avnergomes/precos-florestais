@@ -21,6 +21,12 @@ export default function Footer({ stats }) {
               <div className="text-xs text-neutral-500 pt-2 border-t border-neutral-700">
                 <p>Período: {stats.periodo_inicio} a {stats.periodo_fim}</p>
                 <p>{stats.total_registros?.toLocaleString('pt-BR')} registros</p>
+                {stats.periodo_fim && (
+                  <p>
+                    Dados atualizados em{' '}
+                    <span>{String(stats.periodo_fim).split('-').reverse().join('/')}</span>
+                  </p>
+                )}
               </div>
             )}
           </div>

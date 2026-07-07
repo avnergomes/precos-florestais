@@ -2,6 +2,7 @@
 /**
  * Funções de formatação para o dashboard
  */
+import { ATLAS_CATEGORICAL } from './chart-palette.js';
 
 export function formatCurrency(value, decimals = 2) {
   if (value === null || value === undefined || isNaN(value)) return '-';
@@ -53,34 +54,39 @@ export function getCategoryLabel(categoria) {
   return categoria || '';
 }
 
-function hashToColor(input) {
-  let hash = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    hash = input.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  const saturation = 55;
-  const lightness = 45;
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
+// Mapeamento fixo categoria -> cor Okabe-Ito (paleta categorica daltonico-segura
+// de chart-palette.js). Compartilhado por TimeSeriesChart, TreemapChart e
+// LollipopChart para manter a mesma cor por categoria em todos os graficos.
+const CATEGORY_COLORS_A11Y = {
+  'TORAS': '#0072B2',                 // azul
+  'MADEIRASERRADA': '#D55E00',        // vermelhao
+  'MUDAS': '#009E73',                 // verde-azulado
+  'ENERGIA': '#E69F00',               // laranja
+  'LENHA': '#E69F00',                 // laranja (legado)
+  'PFNM': '#CC79A7',                  // roxo-avermelhado
+  'PRODUTOSNAOMADEIREIROS': '#CC79A7',
+  'PRODUTOSBENEFICIADOS': '#56B4E9',  // azul-ceu
+  'PRODUTOSPROCESSADOS': '#56B4E9',
+  'CAVACOS': '#2a2419',               // tinta atlas
+  'RESIDUOS': '#6e6453',              // neutro
+  'SEMENTES': '#F0E442',              // amarelo
+  'CUSTOSOPERACIONAIS': '#254e69'     // azul escuro (agua)
+};
 
 export function getCategoryColor(categoria) {
-  const colors = {
-    'MUDAS': '#4A7C23',
-    'TORAS': '#8B4513',
-    'LENHA': '#a87f2d',
-    'CAVACOS': '#6B7280',
-    'PRODUTOSNAOMADEIREIROS': '#059669',
-    'CUSTOSOPERACIONAIS': '#1F6FEB',
-    'PRODUTOSPROCESSADOS': '#7C3AED',
-    'SEMENTES': '#0EA5A8'
-  };
   const key = String(categoria || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^A-Za-z0-9]+/g, '')
     .toUpperCase();
-  return colors[key] || hashToColor(key);
+  if (!key) return '#6e6453';
+  if (CATEGORY_COLORS_A11Y[key]) return CATEGORY_COLORS_A11Y[key];
+  // Fallback estavel dentro da paleta Okabe-Ito (nunca um matiz arbitrario).
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return ATLAS_CATEGORICAL[Math.abs(hash) % ATLAS_CATEGORICAL.length];
 }
 
 // ATLAS-PALETTE-V1

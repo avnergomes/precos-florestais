@@ -1,19 +1,11 @@
 // ATLAS-A11Y-HEX-SWEPT
 import { useMemo, useState } from 'react'
 import * as d3 from 'd3'
+import { getCategoryColor } from '../utils/format'
 
-const CATEGORY_COLORS = {
-  'Toras': '#004a72',
-  'Madeira Serrada': '#166534',
-  'Energia': '#ea580c',
-  'Cavacos': '#2d5f7f',
-  'Mudas': '#059669',
-  'PFNM': '#7c3aed',
-  'Sementes': '#ca8a04',
-  'Residuos': '#6e6453',
-  'Produtos Beneficiados': '#be185d',
-  'Custos Operacionais': '#475569'
-}
+// Categorias exibidas na legenda; cores vem do mapeamento Okabe-Ito
+// compartilhado em utils/format.js (mesmas cores do Lollipop e das series).
+const LEGEND_CATEGORIES = ['Toras', 'Madeira Serrada', 'Energia', 'Cavacos', 'Mudas', 'PFNM']
 
 export default function TreemapChart({
   data,
@@ -112,10 +104,11 @@ export default function TreemapChart({
     <div className="card p-6">
       <h3 className="text-lg font-semibold text-dark-700 mb-4">{title}</h3>
 
+      <div className="overflow-x-auto">
       <svg width={width} height={height} className="mx-auto">
         {/* Category backgrounds */}
         {categories.map((cat, i) => {
-          const color = CATEGORY_COLORS[cat.data.name] || '#6e6453'
+          const color = getCategoryColor(cat.data.name)
           return (
             <g key={`cat-${i}`}>
               <rect
@@ -151,7 +144,7 @@ export default function TreemapChart({
           const w = leaf.x1 - leaf.x0
           const h = leaf.y1 - leaf.y0
           const categoria = leaf.data.categoria || leaf.parent?.parent?.data.name
-          const color = CATEGORY_COLORS[categoria] || '#6e6453'
+          const color = getCategoryColor(categoria)
           const isHovered = hoveredId === i
 
           return (
@@ -194,16 +187,17 @@ export default function TreemapChart({
           )
         })}
       </svg>
+      </div>
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-4">
-        {Object.entries(CATEGORY_COLORS).slice(0, 6).map(([cat, color]) => (
+        {LEGEND_CATEGORIES.map((cat) => (
           <div
             key={cat}
             className="flex items-center gap-2 cursor-pointer hover:bg-dark-50 px-2 py-1 rounded"
             onClick={() => onCategoriaClick?.(cat)}
           >
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: color }} />
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: getCategoryColor(cat) }} />
             <span className="text-xs text-dark-600">{cat}</span>
           </div>
         ))}

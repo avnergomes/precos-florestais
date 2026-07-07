@@ -12,14 +12,18 @@ export default function KpiCards({ aggregations, filteredData }) {
     );
   }
 
-  const { precoMedio, precoMin, precoMax, totalRegistros, byCategoria, byProduto } = aggregations;
+  const { precoMedio, precoMin, precoMax, totalRegistros, byCategoria, byProduto, unidadeDominante } = aggregations;
 
-  // Calculate variation from first to last period
-  const periodos = aggregations.periodos;
+  // Variação calculada dentro da unidade dominante (preços comensuráveis);
+  // misturar R$/unid com R$/m3 faria a variação refletir o mix de unidades.
+  const byPeriodoVar = aggregations.byPeriodoDominante && Object.keys(aggregations.byPeriodoDominante).length > 0
+    ? aggregations.byPeriodoDominante
+    : aggregations.byPeriodo;
+  const periodos = Object.keys(byPeriodoVar || {}).sort();
   let variacao = null;
   if (periodos.length >= 2) {
-    const primeiroPreco = aggregations.byPeriodo[periodos[0]]?.media;
-    const ultimoPreco = aggregations.byPeriodo[periodos[periodos.length - 1]]?.media;
+    const primeiroPreco = byPeriodoVar[periodos[0]]?.media;
+    const ultimoPreco = byPeriodoVar[periodos[periodos.length - 1]]?.media;
     if (primeiroPreco && ultimoPreco) {
       variacao = (ultimoPreco - primeiroPreco) / primeiroPreco;
     }
@@ -29,9 +33,10 @@ export default function KpiCards({ aggregations, filteredData }) {
     {
       label: 'Preço Médio',
       value: formatCurrency(precoMedio),
+      unit: unidadeDominante,
       icon: DollarSign,
       color: 'from-forest-500 to-forest-600',
-      subtext: `Min: ${formatCurrency(precoMin)} | Max: ${formatCurrency(precoMax)}`
+      subtext: `${unidadeDominante ? `${unidadeDominante} · ` : ''}Min: ${formatCurrency(precoMin)} | Max: ${formatCurrency(precoMax)}`
     },
     {
       label: 'Total de Registros',
@@ -45,7 +50,7 @@ export default function KpiCards({ aggregations, filteredData }) {
       value: variacao !== null ? `${variacao > 0 ? '+' : ''}${(variacao * 100).toFixed(1)}%` : '-',
       icon: variacao >= 0 ? TrendingUp : TrendingDown,
       color: variacao >= 0 ? 'from-sky-600 to-sky-700' : 'from-orange-600 to-orange-700',
-      subtext: periodos.length >= 2 ? `${periodos[0]} a ${periodos[periodos.length - 1]}` : '-'
+      subtext: periodos.length >= 2 ? `${periodos[0]} a ${periodos[periodos.length - 1]}${unidadeDominante ? ` · ${unidadeDominante}` : ''}` : '-'
     },
     {
       label: 'Categorias',
@@ -63,7 +68,14 @@ export default function KpiCards({ aggregations, filteredData }) {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="kpi-label">{card.label}</p>
-              <p className="kpi-value mt-1">{card.value}</p>
+              <p className="kpi-value mt-1">
+                {card.value}
+                {card.unit && (
+                  <span className="text-sm font-normal text-neutral-400 ml-1.5 align-baseline" data-i18n-skip>
+                    {card.unit}
+                  </span>
+                )}
+              </p>
               <p className="text-xs text-neutral-400 mt-2 truncate" title={card.subtext}>
                 {card.subtext}
               </p>

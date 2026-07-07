@@ -22,7 +22,7 @@ import { AlertCircle } from 'lucide-react';
 import { getCategoryLabel } from './utils/format';
 
 export default function App() {
-  const { data, aggregated, geoData, forecasts, loading, error, loadForecastData } = useData();
+  const { data, aggregated, geoData, forecasts, loading, error, isForecastLoading, forecastError, loadForecastData } = useData();
 
   const [activeTab, setActiveTab] = useState('preco-atual');
   const [filters, setFilters] = useState({
@@ -374,8 +374,32 @@ export default function App() {
         })()}
 
         {activeTab === 'previsoes' && !forecasts?.series && (
-          <div className="bg-white rounded-xl border border-neutral-100 p-8 text-center text-neutral-400">
-            Dados de previsão não disponíveis
+          <div className="bg-white rounded-xl border border-neutral-100 p-8 text-center">
+            {isForecastLoading ? (
+              <div className="flex flex-col items-center gap-3 text-neutral-500">
+                <div
+                  className="w-8 h-8 border-4 border-forest-200 border-t-forest-600 rounded-full animate-spin"
+                  aria-hidden="true"
+                />
+                <p>Carregando previsões (aproximadamente 10 MB)...</p>
+                <p className="text-xs text-neutral-400">
+                  Isso pode levar alguns segundos em conexões lentas.
+                </p>
+              </div>
+            ) : forecastError ? (
+              <div className="flex flex-col items-center gap-3">
+                <p className="text-neutral-600">Não foi possível carregar as previsões.</p>
+                <button
+                  type="button"
+                  onClick={loadForecastData}
+                  className="px-4 py-2 bg-forest-600 text-white rounded-lg hover:bg-forest-700 transition-colors font-medium"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            ) : (
+              <p className="text-neutral-400">Dados de previsão não disponíveis</p>
+            )}
           </div>
         )}
 

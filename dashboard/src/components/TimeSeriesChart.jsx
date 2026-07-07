@@ -4,16 +4,19 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, Area, AreaChart
 } from 'recharts';
-import { formatCurrency, formatPeriod, getCategoryColor, getCategoryLabel } from '../utils/format';
+import { formatCurrency, formatPeriod, getCategoryColor, getCategoryLabel, categoricalColor } from '../utils/format';
 
-// Gera cores únicas para subcategorias baseado em hash
+// Cores de subcategoria vindas da paleta Okabe-Ito (daltonico-segura) de
+// chart-palette.js, com indice estavel por ordem de aparicao.
 function getSubcategoryColor(subcategoria, index) {
-  const baseColors = [
-    '#4A7C23', '#1F6FEB', '#a87f2d', '#7C3AED', '#059669',
-    '#a8482c', '#0891B2', '#C026D3', '#65A30D', '#EA580C',
-    '#2563EB', '#005c8e', '#9333EA', '#CA8A04', '#0D9488'
-  ];
-  return baseColors[index % baseColors.length];
+  return categoricalColor(index);
+}
+
+// Redundancia nao-cromatica: quando ha mais series do que cores na paleta,
+// as series repetidas ganham tracejado distinto.
+function getSubcategoryDash(index) {
+  if (index < 8) return undefined;
+  return index < 16 ? '6 3' : '2 3';
 }
 
 export default function TimeSeriesChart({ filteredData, aggregations, showByCategory = false, showBySubcategory = false, title, onAnoClick, selectedAno, onCategoriaClick, selectedCategoria }) {
@@ -148,6 +151,7 @@ export default function TimeSeriesChart({ filteredData, aggregations, showByCate
                 dataKey={cat}
                 stroke={showBySubcategory ? getSubcategoryColor(cat, index) : getCategoryColor(cat)}
                 strokeWidth={2}
+                strokeDasharray={showBySubcategory ? getSubcategoryDash(index) : undefined}
                 dot={false}
                 activeDot={{ r: 6 }}
               />

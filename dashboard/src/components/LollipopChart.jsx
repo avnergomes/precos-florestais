@@ -1,25 +1,13 @@
 // ATLAS-A11Y-HEX-SWEPT
 import { useMemo } from 'react'
 import * as d3 from 'd3'
+import { getCategoryColor } from '../utils/format'
 
 const MARGIN = { top: 20, right: 60, bottom: 20, left: 180 }
 
-const CATEGORY_COLORS = {
-  'Toras': '#004a72',
-  'Madeira Serrada': '#166534',
-  'Energia': '#ea580c',
-  'Cavacos': '#2d5f7f',
-  'Mudas': '#059669',
-  'PFNM': '#7c3aed',
-  'Sementes': '#ca8a04',
-  'Residuos': '#6e6453',
-  'Produtos Beneficiados': '#be185d',
-  'MUDAS': '#059669',
-  'TORAS': '#004a72',
-  'LENHA': '#ea580c',
-  'CAVACOS': '#2d5f7f',
-  'PRODUTOS_NAO_MADEIREIROS': '#7c3aed'
-}
+// Categorias exibidas na legenda; cores vem do mapeamento Okabe-Ito
+// compartilhado em utils/format.js (mesmas cores do Treemap e das series).
+const LEGEND_CATEGORIES = ['Toras', 'Madeira Serrada', 'Energia', 'Cavacos', 'Mudas']
 
 export default function LollipopChart({
   data,
@@ -118,6 +106,7 @@ export default function LollipopChart({
     <div className="bg-white rounded-xl border border-neutral-100 p-6">
       <h3 className="text-lg font-semibold text-neutral-800 mb-4">{title}</h3>
 
+      <div className="overflow-x-auto">
       <svg width={width} height={height}>
         <g transform={`translate(${MARGIN.left}, ${MARGIN.top})`}>
           {/* Grid lines */}
@@ -151,7 +140,7 @@ export default function LollipopChart({
           {items.map((item, i) => {
             const y = yScale(item.produto) + yScale.bandwidth() / 2
             const xEnd = xScale(item.preco_medio)
-            const color = CATEGORY_COLORS[item.categoria] || '#6e6453'
+            const color = getCategoryColor(item.categoria)
 
             return (
               <g
@@ -230,12 +219,13 @@ export default function LollipopChart({
           })}
         </g>
       </svg>
+      </div>
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-3">
-        {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([cat, color]) => (
+        {LEGEND_CATEGORIES.map((cat) => (
           <div key={cat} className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getCategoryColor(cat) }} />
             <span className="text-xs text-neutral-600">{cat}</span>
           </div>
         ))}

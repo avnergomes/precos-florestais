@@ -63,6 +63,8 @@ export default function Tabs({ activeTab, setActiveTab }) {
             key={tab.id}
             role="tab"
             aria-selected={activeTab === tab.id}
+            aria-label={tab.label}
+            title={tab.label}
             onClick={() => setActiveTab(tab.id)}
             className={`tab-button flex items-center gap-2 whitespace-nowrap transition-transform duration-200 ${
               activeTab === tab.id ? 'active scale-[1.02]' : ''

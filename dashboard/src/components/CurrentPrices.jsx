@@ -128,6 +128,21 @@ export default function CurrentPrices({ filteredData, aggregated }) {
     return data;
   }, [currentPrices, searchTerm, sortField, sortOrder]);
 
+  // Média geral calculada apenas na unidade com mais registros no recorte
+  // atual: preços em R$/unid, R$/kg e R$/m3 não são comensuráveis entre si.
+  const mediaGeral = useMemo(() => {
+    if (!displayData.length) return null;
+    const counts = {};
+    displayData.forEach(d => {
+      const un = d.unidade || '-';
+      counts[un] = (counts[un] || 0) + d.numRegistros;
+    });
+    const unidade = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    const rows = displayData.filter(d => (d.unidade || '-') === unidade);
+    const media = rows.reduce((sum, d) => sum + d.precoMedio, 0) / rows.length;
+    return { unidade, media };
+  }, [displayData]);
+
   const handleSort = (field) => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
@@ -273,7 +288,12 @@ export default function CurrentPrices({ filteredData, aggregated }) {
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-neutral-700">
-              {formatCurrency(displayData.reduce((sum, d) => sum + d.precoMedio, 0) / displayData.length || 0)}
+              {mediaGeral ? formatCurrency(mediaGeral.media) : '-'}
+              {mediaGeral && (
+                <span className="text-sm font-normal text-neutral-400 ml-1.5" data-i18n-skip>
+                  {mediaGeral.unidade}
+                </span>
+              )}
             </p>
             <p className="text-xs text-neutral-500">Preço Médio Geral</p>
           </div>

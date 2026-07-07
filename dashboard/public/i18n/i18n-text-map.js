@@ -1257,6 +1257,20 @@ window.__I18N_TEXT_MAP__ = (function () {
     // ── banner de convite ao hub (substituiu o referer gate) ─────────
     ["Este painel faz parte do ecossistema Datageo Paraná.", "This dashboard is part of the Datageo Paraná ecosystem.", "Este panel forma parte del ecosistema Datageo Paraná."],
     ["Conhecer o hub", "Visit the hub", "Conocer el hub"],
+
+    // ── precos-florestais: estados de carregamento/erro das previsões ─
+    ["Carregando previsões (aproximadamente 10 MB)...",
+      "Loading forecasts (about 10 MB)…",
+      "Cargando previsiones (aproximadamente 10 MB)…"],
+    ["Isso pode levar alguns segundos em conexões lentas.",
+      "This may take a few seconds on slow connections.",
+      "Esto puede tardar unos segundos en conexiones lentas."],
+    ["Não foi possível carregar as previsões.",
+      "Could not load the forecasts.",
+      "No fue posible cargar las previsiones."],
+
+    // ── rodapé: data de atualização dos dados ─────────────────────────
+    ["Dados atualizados em", "Data last updated:", "Datos actualizados en"],
   ];
 
   var en = {}, es = {};

@@ -10,6 +10,7 @@ export function useData() {
   const [loading, setLoading] = useState(true);
   const [isForecastLoading, setIsForecastLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [forecastError, setForecastError] = useState(null);
 
   // Carregar dados essenciais na inicialização (detailed, aggregated, geoData)
   useEffect(() => {
@@ -61,12 +62,15 @@ export function useData() {
   }, []);
 
   // Função para carregar forecasts.json sob demanda (9.4MB)
+  // Falha aqui usa um estado de erro próprio (forecastError) tratado
+  // localmente na aba Previsões, sem derrubar o painel inteiro.
   const loadForecastData = useCallback(async () => {
     if (forecasts || isForecastLoading) return;
 
     const controller = new AbortController();
     try {
       setIsForecastLoading(true);
+      setForecastError(null);
       const res = await fetch(`${BASE_URL}data/forecasts.json`, { signal: controller.signal });
       if (!res.ok) throw new Error('Erro ao carregar previsões');
       const forecastData = await res.json();
@@ -75,7 +79,7 @@ export function useData() {
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        setError(err.message);
+        setForecastError(err.message);
       }
     } finally {
       if (!controller.signal.aborted) {
@@ -84,7 +88,7 @@ export function useData() {
     }
   }, [forecasts, isForecastLoading]);
 
-  return { data, aggregated, geoData, forecasts, loading, isForecastLoading, error, loadForecastData };
+  return { data, aggregated, geoData, forecasts, loading, isForecastLoading, error, forecastError, loadForecastData };
 }
 
 export function useFilteredData(data, filters) {
@@ -134,14 +138,50 @@ export function useAggregations(filteredData) {
         byPeriodo: {},
         byRegiao: {},
         byCategoria: {},
-        byProduto: {}
+        byProduto: {},
+        byUnidade: {},
+        unidadeDominante: null,
+        registrosUnidadeDominante: 0,
+        byPeriodoDominante: {}
       };
     }
 
-    const precos = filteredData.map(d => d.preco);
-    const precoMedio = precos.reduce((a, b) => a + b, 0) / precos.length;
-    const precoMin = Math.min(...precos);
-    const precoMax = Math.max(...precos);
+    // Preços só são comensuráveis dentro da mesma unidade (R$/m3, R$/unid...).
+    // O KPI de preço médio usa a unidade com mais registros no recorte atual,
+    // em vez de misturar mudas em R$/unid com toras em R$/m3.
+    const byUnidade = {};
+    filteredData.forEach(d => {
+      const un = d.unidade || '-';
+      if (!byUnidade[un]) {
+        byUnidade[un] = { precos: [], count: 0 };
+      }
+      byUnidade[un].precos.push(d.preco);
+      byUnidade[un].count++;
+    });
+
+    const unidadeDominante = Object.entries(byUnidade)
+      .sort((a, b) => b[1].count - a[1].count)[0][0];
+    const precosDominante = byUnidade[unidadeDominante].precos;
+
+    const precoMedio = precosDominante.reduce((a, b) => a + b, 0) / precosDominante.length;
+    const precoMin = Math.min(...precosDominante);
+    const precoMax = Math.max(...precosDominante);
+
+    // Série por período restrita à unidade dominante (para variação comensurável)
+    const byPeriodoDominante = {};
+    filteredData.forEach(d => {
+      if ((d.unidade || '-') !== unidadeDominante) return;
+      if (!byPeriodoDominante[d.periodo]) {
+        byPeriodoDominante[d.periodo] = { precos: [], count: 0 };
+      }
+      byPeriodoDominante[d.periodo].precos.push(d.preco);
+      byPeriodoDominante[d.periodo].count++;
+    });
+
+    Object.keys(byPeriodoDominante).forEach(periodo => {
+      const precos = byPeriodoDominante[periodo].precos;
+      byPeriodoDominante[periodo].media = precos.reduce((a, b) => a + b, 0) / precos.length;
+    });
 
     // Agrupar por período
     const byPeriodo = {};
@@ -251,6 +291,10 @@ export function useAggregations(filteredData) {
       byProduto,
       topProdutos,
       hierarquia,
+      byUnidade,
+      unidadeDominante,
+      registrosUnidadeDominante: byUnidade[unidadeDominante].count,
+      byPeriodoDominante,
     };
   }, [filteredData]);
 }

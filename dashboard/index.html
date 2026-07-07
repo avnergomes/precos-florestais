@@ -26,6 +26,17 @@
           a.href = 'https://datageoparana.github.io/?from=' + encodeURIComponent(location.hostname + location.pathname);
           a.textContent = 'Conhecer o hub';
           a.style.cssText = 'color:#e0b850;font-weight:600;text-decoration:underline;white-space:nowrap';
+          // Empilha o banner LGPD acima deste, para os dois ficarem
+          // visiveis e clicaveis na primeira visita (sem sobreposicao).
+          function stackLgpd() {
+            try {
+              var lgpd = document.getElementById('lgpd-banner');
+              if (!lgpd) return;
+              lgpd.style.bottom = (lgpd.style.display !== 'none' && bar.parentNode)
+                ? bar.offsetHeight + 'px'
+                : '0px';
+            } catch (e) {}
+          }
           var btn = document.createElement('button');
           btn.type = 'button';
           btn.setAttribute('aria-label', 'Fechar');
@@ -34,11 +45,19 @@
           btn.onclick = function () {
             try { localStorage.setItem(KEY, '1'); } catch (e) {}
             bar.parentNode && bar.parentNode.removeChild(bar);
+            window.removeEventListener('resize', stackLgpd);
+            try {
+              var lgpd = document.getElementById('lgpd-banner');
+              if (lgpd) lgpd.style.bottom = '0px';
+            } catch (e) {}
           };
           bar.appendChild(span);
           bar.appendChild(a);
           bar.appendChild(btn);
           document.body.appendChild(bar);
+          stackLgpd();
+          window.addEventListener('resize', stackLgpd);
+          window.addEventListener('load', stackLgpd);
         }
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', mount);
