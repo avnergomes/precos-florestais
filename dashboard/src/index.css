@@ -103,6 +103,7 @@
     @apply px-5 py-2.5 text-[0.74rem] font-mono uppercase tracking-[0.16em]
            text-neutral-600 border border-transparent
            transition-colors duration-200 hover:text-neutral-900 hover:border-neutral-900/30;
+    min-height: 44px; /* alvo de toque mínimo WCAG 2.5.5 */
   }
   .tab-button.active {
     @apply bg-neutral-900 text-[#f1e9d6] border-neutral-900 shadow-none;
@@ -190,6 +191,11 @@
     background-color: theme('colors.neutral.400');
     border-radius: 3px;
   }
+}
+
+/* Previne auto-zoom do iOS em selects com font-size < 16 px */
+@media (max-width: 640px) {
+  .filter-select { font-size: 1rem; }
 }
 
 /* Leaflet customizations */

@@ -108,7 +108,7 @@ export default function Filters({ aggregated, filters, setFilters }) {
           <button
             onClick={() => setExpanded(prev => !prev)}
             aria-label={expanded ? 'Recolher filtros' : 'Expandir filtros'}
-            className="p-1 rounded-lg hover:bg-neutral-100 transition-colors"
+            className="p-3 rounded-lg hover:bg-neutral-100 transition-colors"
           >
             <ChevronDown
               className={`w-5 h-5 text-neutral-500 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}

@@ -48,7 +48,7 @@ export default function Tabs({ activeTab, setActiveTab }) {
       {canScrollLeft && (
         <button
           onClick={() => scroll(-1)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-1 bg-white/90 rounded-full shadow-md sm:hidden"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-white/90 rounded-full shadow-md sm:hidden"
           aria-label="Rolar para esquerda"
         >
           <ChevronLeft className="w-4 h-4 text-forest-600" />
@@ -71,14 +71,14 @@ export default function Tabs({ activeTab, setActiveTab }) {
             }`}
           >
             <tab.icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{tab.label}</span>
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
       {canScrollRight && (
         <button
           onClick={() => scroll(1)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-1 bg-white/90 rounded-full shadow-md sm:hidden"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-white/90 rounded-full shadow-md sm:hidden"
           aria-label="Rolar para direita"
         >
           <ChevronRight className="w-4 h-4 text-forest-600" />

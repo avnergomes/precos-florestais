@@ -118,7 +118,7 @@ export default function ProductTable({ aggregations, filteredData }) {
               placeholder="Buscar produto..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="pl-9 pr-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500/50 focus:border-forest-500"
+              className="pl-9 pr-3 py-2 text-base sm:text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500/50 focus:border-forest-500"
             />
           </div>
           <button
