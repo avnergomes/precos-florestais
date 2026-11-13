@@ -32,7 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "dashboard" / "public" / "data" / "detailed.json"
 OUTPUT_PATH = BASE_DIR / "dashboard" / "public" / "data" / "forecasts.json"
 
-TARGET_PERIOD = "2026-11"
+# Alvo = último período disponível + 12 meses (antes era fixo e envelhecia).
+FORECAST_MONTHS = 12
 MAX_HORIZON = 36
 
 
@@ -285,10 +286,14 @@ def main():
             acc[0] += float(row["preco"])
             acc[1] += 1
 
+    target_period = add_months(
+        max(row["periodo"] for row in data if row.get("periodo")), FORECAST_MONTHS
+    )
+
     output = {
         "meta": {
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "target_period": TARGET_PERIOD,
+            "target_period": target_period,
             "max_horizon": MAX_HORIZON,
             "models": {
                 "xgboost": {"label": "XGBoost"},
@@ -309,7 +314,7 @@ def main():
             continue
 
         last_period = periods[-1]
-        horizon_to_target = months_between(last_period, TARGET_PERIOD)
+        horizon_to_target = months_between(last_period, target_period)
         if horizon_to_target < 1:
             continue
         horizon = min(horizon_to_target, MAX_HORIZON)

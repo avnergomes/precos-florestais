@@ -28,7 +28,8 @@
     2022,
     2023,
     2024,
-    2025
+    2025,
+    2026
   ],
   "regioes": [
     "Apucarana",
@@ -298,21 +299,21 @@
     }
   },
   "stats": {
-    "total_registros": 34525,
+    "total_registros": 35578,
     "periodo_inicio": "1997-09",
-    "periodo_fim": "2025-11",
-    "total_anos": 29,
+    "periodo_fim": "2026-08",
+    "total_anos": 30,
     "total_regioes": 22,
     "total_categorias": 10,
     "total_produtos": 96
   },
   "precos_medios_ultimo": {
-    "Cavacos": 206.126884057971,
-    "Custos Operacionais": 71.72,
-    "Energia": 170.5345652173913,
-    "Mudas": 2.0799479087494355,
-    "PFNM": 11.093622448979591,
-    "Toras": 162.87926526672263
+    "Cavacos": 247.661338531514,
+    "Custos Operacionais": 75.89,
+    "Energia": 201.5105882352941,
+    "Mudas": 2.359992921492921,
+    "PFNM": 10.509305555555555,
+    "Toras": 170.20929315281668
   },
-  "ultimo_periodo": "2025-11"
+  "ultimo_periodo": "2026-08"
 }

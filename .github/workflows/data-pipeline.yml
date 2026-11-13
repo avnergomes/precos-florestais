@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  actions: write  # necessário para o createWorkflowDispatch do deploy.yml (sem isso: 403)
 
 jobs:
   process:
